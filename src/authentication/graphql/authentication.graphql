@@ -1,0 +1,12 @@
+input EmailSignUpRequest {
+  email: String!
+  password: String!
+}
+
+type Token {
+  access_token: String!
+}
+
+type Query {
+  signUpWithEmail(signUpRequest: EmailSignUpRequest!): Token
+}

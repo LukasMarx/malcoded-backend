@@ -1,0 +1,1 @@
+export const PostModelToken = 'PostModelToken';

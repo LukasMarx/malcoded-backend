@@ -1,0 +1,38 @@
+type Query {
+  getPosts: [Post]
+  post(id: ID!): Post
+}
+
+type Mutation {
+  createPost(createPostInput: CreatePostInput): Post
+  updatePost(id: ID, updatePostInput: UpdatePostInput): Post
+}
+
+type Post {
+  id: ID
+  title: String
+  description: String
+  releaseDate: String
+  thumbnail: String
+  url: String
+  primaryColor: String
+  recommendations: [Post]
+}
+
+input CreatePostInput {
+  title: String
+  description: String
+  releaseDate: String
+  thumbnail: String
+  url: String
+  primaryColor: String
+}
+
+input UpdatePostInput {
+  title: String
+  description: String
+  releaseDate: String
+  thumbnail: String
+  url: String
+  primaryColor: String
+}

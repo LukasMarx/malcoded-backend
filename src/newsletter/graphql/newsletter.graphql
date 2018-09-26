@@ -1,0 +1,21 @@
+type Query {
+  getNewsletterSubscribers: [NewsletterSubscriber]
+  newsletterSubscribers(id: ID!): NewsletterSubscriber
+}
+
+type Mutation {
+  subscribeToNewsletter(
+    subscribeToNewsletterInput: SubscribeToNewsletterInput
+  ): NewsletterSubscriber
+}
+
+type NewsletterSubscriber {
+  email: String
+  userGaveConsent: Boolean
+  isEmailVerified: Boolean
+}
+
+input SubscribeToNewsletterInput {
+  email: String
+  userGaveConsent: Boolean
+}
