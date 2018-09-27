@@ -1,0 +1,41 @@
+type Comment {
+  id: ID
+  author: User
+  content: String
+  creationDate: String
+  updateDate: String
+}
+
+input CreateCommentInput {
+  content: String
+}
+
+input UpdateCommentInput {
+  content: String
+}
+
+type CommentConnection {
+  edges: [CommentEdge]
+  totalCount: Int
+}
+
+type CommentEdge {
+  node: Comment
+}
+
+type Query {
+  getComments(skip: Int, limit: Int): CommentConnection
+  getCommentsForPost(postId: ID!, skip: Int, limit: Int): CommentConnection
+  comment(id: ID!): Comment
+}
+
+type Mutation {
+  createCommentForPost(
+    postId: ID!
+    createCommentInput: CreateCommentInput!
+  ): Comment
+  updateComment(
+    commentId: ID!
+    updateCommentInput: UpdateCommentInput!
+  ): Comment
+}

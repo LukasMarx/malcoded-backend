@@ -1,6 +1,7 @@
 type User {
+  id: ID
   email: String
-  emailConfirmed: Boolean
+  isEmailVerified: Boolean
 }
 
 input CreateUserInput {
@@ -9,10 +10,19 @@ input CreateUserInput {
 }
 
 type Query {
-  getUsers: [User]
+  getUsers(skip: Int, limit: Int): UserConnection
   user(id: ID!): User
 }
 
 type Mutation {
   createUser(createUserInput: CreateUserInput): User
+}
+
+type UserConnection {
+  edges: [UserEdge]
+  totalCount: Int
+}
+
+type UserEdge {
+  node: User
 }

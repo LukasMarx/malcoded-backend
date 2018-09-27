@@ -1,6 +1,8 @@
 type Query {
-  getPosts: [Post]
+  getPosts(skip: Int, limit: Int): PostConnection
+  getPublishedPosts(skip: Int, limit: Int): PostConnection
   post(id: ID!): Post
+  publishedPost(id: ID!): Post
 }
 
 type Mutation {
@@ -16,7 +18,7 @@ type Post {
   thumbnail: String
   url: String
   primaryColor: String
-  recommendations: [Post]
+  recommendations: PostConnection
 }
 
 input CreatePostInput {
@@ -35,4 +37,13 @@ input UpdatePostInput {
   thumbnail: String
   url: String
   primaryColor: String
+}
+
+type PostConnection {
+  edges: [PostEdge]
+  totalCount: Int
+}
+
+type PostEdge {
+  node: Post
 }

@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
 import { EmailModule } from 'email/email.module';
+import { CommentModule } from 'comments/comment.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { EmailModule } from 'email/email.module';
     AuthenticationModule,
     NewsletterModule,
     EmailModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

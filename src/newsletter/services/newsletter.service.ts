@@ -9,6 +9,7 @@ import { NewsletterEmailVerificationToken } from '../interfaces/email-verificati
 import { MjmlService } from 'email/services/mjml.service';
 import { EmailService } from 'email/services/email.service';
 import { verifyEmailTemplate } from '../emailTemplates/verfiyEmail';
+import { QueryListResult } from 'common/interfaces/query-list-result.interface';
 
 @Injectable()
 export class NewsletterService {
@@ -32,8 +33,21 @@ export class NewsletterService {
     return subscriber;
   }
 
-  async findAllSubscribers(): Promise<NewsletterSubscriber[]> {
-    return await this.subscriberModel.find().exec();
+  async findAllSubscribers(
+    skip?: number,
+    limit?: number,
+  ): Promise<QueryListResult<NewsletterSubscriber>> {
+    const allSubscribers = await this.subscriberModel
+      .find()
+      .skip(skip || 0)
+      .limit(limit || 0)
+      .exec();
+    const numberOfSubscribers = await this.subscriberModel.countDocuments();
+
+    return {
+      result: allSubscribers,
+      totalCount: numberOfSubscribers,
+    };
   }
 
   async findOneSubscriberById(id: string): Promise<NewsletterSubscriber> {

@@ -8,6 +8,8 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request } from 'express';
 import * as passport from 'passport';
 import { JwtStrategy } from '../strategies/jwt.strategy';
+import { UserService } from 'user/services/user.service';
+import { JwtPayload } from '../interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -22,14 +24,16 @@ export class AuthGuard implements CanActivate {
       : context.switchToHttp().getRequest();
     const auth = await this.authenticate(request);
     try {
-      request.user = this.handleRequest(auth.err, auth.user, auth.info);
+      const user = await this.handleRequest(auth.err, auth.user, auth.info);
+      request.user = user;
+      ctx.getContext().user = user;
     } catch (error) {}
     return true;
   }
 
   async authenticate(
     request: Request,
-  ): Promise<{ err: any; user: any; info: any }> {
+  ): Promise<{ err: any; user: JwtPayload; info: any }> {
     return new Promise<{ err: any; user: any; info: any }>(
       (resolve, reject) => {
         passport.authenticate('jwt', { session: false }, (err, user, info) => {
@@ -44,7 +48,7 @@ export class AuthGuard implements CanActivate {
     );
   }
 
-  handleRequest(err, user, info) {
+  async handleRequest(err, user, info) {
     return user;
   }
 }

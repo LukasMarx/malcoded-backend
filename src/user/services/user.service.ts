@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { User } from '../interfaces/user.interface';
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
 import { HashingService } from 'crypto/services/hashing.service';
+import { QueryListResult } from 'common/interfaces/query-list-result.interface';
 
 @Injectable()
 export class UserService {
@@ -20,8 +21,17 @@ export class UserService {
     return await createdUser.save();
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userModel.find().exec();
+  async findAll(skip?: number, limit?: number): Promise<QueryListResult<User>> {
+    const allUsers = await this.userModel
+      .find()
+      .skip(skip || 0)
+      .limit(limit || 0)
+      .exec();
+    const userCount = await this.userModel.countDocuments().exec();
+    return {
+      result: allUsers,
+      totalCount: userCount,
+    };
   }
 
   async findOne(id: string): Promise<User> {
@@ -42,8 +52,21 @@ export class UserService {
     );
   }
 
-  async findMany(ids: string[]): Promise<User[]> {
-    return await this.userModel.find({ _id: { $in: ids } }).exec();
+  async findMany(
+    ids: string[],
+    skip?: number,
+    limit?: number,
+  ): Promise<QueryListResult<User>> {
+    const allUsers = await this.userModel
+      .find({ _id: { $in: ids } })
+      .skip(skip || 0)
+      .limit(limit || 0)
+      .exec();
+    const userCount = await this.userModel.countDocuments().exec();
+    return {
+      result: allUsers,
+      totalCount: userCount,
+    };
   }
 
   async updateOne(id: string, updateUserDto: UpdateUserDto): Promise<User> {

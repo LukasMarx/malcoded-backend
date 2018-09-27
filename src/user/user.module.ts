@@ -5,9 +5,11 @@ import { userProviders } from './providers/user.providers';
 import { UserResolver } from './resolvers/user.resolver';
 import { CryptoModule } from 'crypto/crypto.module';
 import { AuthenticationModule } from 'authentication/authentication.module';
+import { CommonModule } from 'common/common.module';
 
 @Module({
   imports: [
+    CommonModule,
     DatabaseModule,
     CryptoModule,
     forwardRef(() => AuthenticationModule),

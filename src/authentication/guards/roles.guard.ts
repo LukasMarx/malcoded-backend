@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from './auth.guard';
 import { JwtStrategy } from '../strategies/jwt.strategy';
+import { UserService } from 'user/services/user.service';
 
 @Injectable()
 export class RolesGuard extends AuthGuard {
@@ -28,7 +29,6 @@ export class RolesGuard extends AuthGuard {
     const request = ctx.getContext().req;
 
     const user = request.user;
-    console.log(user);
     const hasRole = () => user.roles.some(role => roles.includes(role));
     return user && user.roles && hasRole();
   }

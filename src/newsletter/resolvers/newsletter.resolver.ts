@@ -9,15 +9,29 @@ import {
 import { Roles } from 'authentication/decorators/roles.decorator';
 import { NewsletterService } from '../services/newsletter.service';
 import { SubscribeToNewsletterDto } from '../dto/subscribeToNewsletter.dto';
+import { GraphqlService } from 'common/services/graphql.service';
 
 @Resolver('Newsletter')
 export class NewsletterResolver {
-  constructor(private readonly newsletterService: NewsletterService) {}
+  constructor(
+    private readonly newsletterService: NewsletterService,
+    private readonly graphqlService: GraphqlService,
+  ) {}
 
   @Roles('admin')
   @Query('getNewsletterSubscribers')
-  async getNewsletterSubscribers() {
-    return await this.newsletterService.findAllSubscribers();
+  async getNewsletterSubscribers(
+    @Args('skip') skip: number,
+    @Args('limit') limit: number,
+  ) {
+    const subscriberQueryListResult = await this.newsletterService.findAllSubscribers(
+      skip,
+      limit,
+    );
+    return this.graphqlService.convertArrayToConnection(
+      subscriberQueryListResult.result,
+      subscriberQueryListResult.totalCount,
+    );
   }
 
   @Roles('admin')
