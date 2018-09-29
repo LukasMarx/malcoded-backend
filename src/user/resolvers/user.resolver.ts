@@ -14,6 +14,7 @@ export class UserResolver {
     private readonly graphqlService: GraphqlService,
   ) {}
 
+  @Roles('admin')
   @Query('getUsers')
   async getUsers(@Args('skip') skip: number, @Args('limit') limit: number) {
     const allUsersQueryResult = await this.userService.findAll(skip, limit);

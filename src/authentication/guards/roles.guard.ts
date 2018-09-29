@@ -1,14 +1,12 @@
 import {
   Injectable,
-  CanActivate,
   ExecutionContext,
-  UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from './auth.guard';
 import { JwtStrategy } from '../strategies/jwt.strategy';
-import { UserService } from 'user/services/user.service';
 
 @Injectable()
 export class RolesGuard extends AuthGuard {
@@ -35,7 +33,7 @@ export class RolesGuard extends AuthGuard {
 
   handleRequest(err, user, info) {
     if (err || !user) {
-      throw err || new UnauthorizedException();
+      throw err || new ForbiddenException();
     }
     return user;
   }

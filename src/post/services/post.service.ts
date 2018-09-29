@@ -80,9 +80,11 @@ export class PostService {
   }
 
   async updateOne(id: string, updatePostDto: UpdatePostDto): Promise<Post> {
-    return await this.postModel.findByIdAndUpdate(id, updatePostDto, {
-      new: true,
-    });
+    return await this.postModel
+      .findByIdAndUpdate(id, updatePostDto, {
+        new: true,
+      })
+      .exec();
   }
 
   async delete(id: string): Promise<Post> {

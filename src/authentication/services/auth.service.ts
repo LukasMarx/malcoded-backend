@@ -27,7 +27,9 @@ export class AuthService {
         )
       ) {
         const token: JwtPayload = { email: user.email };
-        const signedToken = this.jwtService.sign(token);
+        const signedToken = this.jwtService.sign(token, {
+          expiresIn: 3600 * 24,
+        });
         return {
           access_token: signedToken,
         };

@@ -1,0 +1,19 @@
+type Query {
+  getAssets(skip: Int, limit: Int): AssetConnection
+}
+
+type Asset {
+  id: String
+  filename: String
+  contentType: String
+  length: Int
+}
+
+type AssetConnection {
+  edges: [AssetEdge]
+  totalCount: Int
+}
+
+type AssetEdge {
+  node: Asset
+}

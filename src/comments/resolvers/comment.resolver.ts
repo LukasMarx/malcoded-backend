@@ -54,7 +54,7 @@ export class CommentResolver {
 
   @Roles('user')
   @Mutation()
-  async updatePost(
+  async updateComment(
     @Args('commentId') commentId: string,
     @Args('createCommentInput') updateCommentDto: UpdateCommentDto,
   ) {

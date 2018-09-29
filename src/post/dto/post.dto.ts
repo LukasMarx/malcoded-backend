@@ -5,6 +5,7 @@ export class CreatePostDto {
   readonly thumbnail: string;
   readonly url: string;
   readonly primaryColor: string;
+  readonly content: string;
 }
 
 export class UpdatePostDto {
@@ -14,4 +15,5 @@ export class UpdatePostDto {
   readonly thumbnail: string;
   readonly url: string;
   readonly primaryColor: string;
+  readonly content: string;
 }

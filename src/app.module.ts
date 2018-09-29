@@ -9,6 +9,7 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
 import { EmailModule } from 'email/email.module';
 import { CommentModule } from 'comments/comment.module';
+import { AssetModule } from 'assets/asset.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CommentModule } from 'comments/comment.module';
     NewsletterModule,
     EmailModule,
     CommentModule,
+    AssetModule,
   ],
   controllers: [AppController],
   providers: [AppService],

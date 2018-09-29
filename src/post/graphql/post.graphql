@@ -6,8 +6,8 @@ type Query {
 }
 
 type Mutation {
-  createPost(createPostInput: CreatePostInput): Post
-  updatePost(id: ID, updatePostInput: UpdatePostInput): Post
+  createPost(createPostInput: CreatePostInput!): Post
+  updatePost(id: ID!, updatePostInput: UpdatePostInput!): Post
 }
 
 type Post {
@@ -19,6 +19,8 @@ type Post {
   url: String
   primaryColor: String
   recommendations: PostConnection
+  content: String
+  category: String
 }
 
 input CreatePostInput {
@@ -28,6 +30,7 @@ input CreatePostInput {
   thumbnail: String
   url: String
   primaryColor: String
+  content: String
 }
 
 input UpdatePostInput {
@@ -37,6 +40,8 @@ input UpdatePostInput {
   thumbnail: String
   url: String
   primaryColor: String
+  content: String
+  category: String
 }
 
 type PostConnection {

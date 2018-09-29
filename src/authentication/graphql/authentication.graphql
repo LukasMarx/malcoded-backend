@@ -4,7 +4,7 @@ input EmailSignUpRequest {
 }
 
 type Token {
-  access_token: String!
+  access_token: String
 }
 
 type Query {

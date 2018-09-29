@@ -54,17 +54,18 @@ export class PostResolver {
   }
 
   @Roles('admin')
-  @Mutation()
+  @Mutation('createPost')
   async createPost(@Args('createPostInput') createPostDto: CreatePostDto) {
     return await this.postService.create(createPostDto);
   }
 
   @Roles('admin')
-  @Mutation()
+  @Mutation('updatePost')
   async updatePost(
     @Args('id') postId: string,
     @Args('updatePostInput') updatePostDto: UpdatePostDto,
   ) {
+    console.log('test');
     return await this.postService.updateOne(postId, updatePostDto);
   }
 
