@@ -1,9 +1,9 @@
 import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { UserService } from '../services/user.service';
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
-import { Roles } from 'authentication/decorators/roles.decorator';
-import { GraphqlService } from 'common/services/graphql.service';
-import { User } from 'authentication/decorators/user.decorator';
+import { Roles } from '../../authentication/decorators/roles.decorator';
+import { GraphqlService } from '../../common/services/graphql.service';
+import { User } from '../../authentication/decorators/user.decorator';
 import { User as IUser } from '../interfaces/user.interface';
 import { UnauthorizedException } from '@nestjs/common';
 
@@ -37,6 +37,20 @@ export class UserResolver {
     return await this.userService.findOne(id);
   }
 
+  @Roles('admin', 'user')
+  @Query('me')
+  async me(@User() user: IUser) {
+    // only allow user to access his own profile
+    if (!user.roles.includes('admin')) {
+      if (!user.id) {
+        throw new UnauthorizedException();
+      }
+    }
+    const result = await this.userService.findOne(user.id);
+    return Object.assign(result, { image: result.image.toString('base64') });
+  }
+
+  @Roles('admin')
   @Mutation()
   async createUser(@Args('createUserInput') createUserDto: CreateUserDto) {
     return await this.userService.create(createUserDto);

@@ -7,6 +7,7 @@ import {
   Get,
   Param,
   Res,
+  BadRequestException,
 } from '@nestjs/common';
 import { AssetService } from '../services/asset.service';
 import { ImageService } from '../services/image.service';
@@ -37,7 +38,7 @@ export class AssetController {
       extension = match[0];
     }
 
-    const fileStream = await this.assetService.findOne(filename);
+    const fileStream = await this.assetService.findOne(filename, res);
     const result = this.imageService.reformatImage(
       fileStream,
       extension,
@@ -55,7 +56,7 @@ export class AssetController {
     if (match && match.length > 0) {
       extension = match[0];
     }
-    const fileStream = await this.assetService.findOne(filename);
+    const fileStream = await this.assetService.findOne(filename, res);
     const result = this.imageService.reformatImage(fileStream, extension);
     res.set('Content-Type', result.mediaType);
     result.stream.pipe(res);

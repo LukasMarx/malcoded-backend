@@ -1,21 +1,47 @@
 type Query {
-  getNewsletterSubscribers: [NewsletterSubscriber]
-  newsletterSubscribers(id: ID!): NewsletterSubscriber
+  getNewsletterSubscribers(
+    skip: Int
+    limit: Int
+  ): NewsletterSubscriberConnection
+  newsletterSubscriber(id: ID!): NewsletterSubscriber
 }
 
 type Mutation {
   subscribeToNewsletter(
     subscribeToNewsletterInput: SubscribeToNewsletterInput
-  ): NewsletterSubscriber
+  ): PublicNewsletterSubscriber
+
+  sendNewsletter(sendNewsletterInput: SendNewsletterInput): Boolean
 }
 
 type NewsletterSubscriber {
   email: String
-  userGaveConsent: Boolean
   isEmailVerified: Boolean
+  signUpDate: String
+  signUpIP: String
+  verificationDate: String
+  verificationIP: String
+}
+
+type PublicNewsletterSubscriber {
+  email: String
 }
 
 input SubscribeToNewsletterInput {
   email: String
   userGaveConsent: Boolean
+}
+
+type NewsletterSubscriberConnection {
+  edges: [NewsletterSubscriberEdge]
+  totalCount: Int
+}
+type NewsletterSubscriberEdge {
+  node: NewsletterSubscriber
+}
+
+input SendNewsletterInput {
+  mjml: String
+  replacementString: String
+  subject: String
 }

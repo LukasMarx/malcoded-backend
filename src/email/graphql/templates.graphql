@@ -1,0 +1,46 @@
+type Query {
+  getEmailTemplates(skip: Int, limit: Int): EmailTemplateConnection
+  emailTemplate(id: ID!): EmailTemplate
+}
+
+type Mutation {
+  createEmailTemplate(
+    createEmailTemplateInput: CreateEmailTemplateInput!
+  ): EmailTemplate
+  updateEmailTemplate(
+    id: ID!
+    updateEmailTemplateInput: UpdateEmailTemplateInput!
+  ): EmailTemplate
+  deleteEmailTemplate(id: ID!): ID
+}
+
+type EmailTemplate {
+  id: ID
+  name: String
+  mjml: String
+  previewBase64: String
+  variables: [String]
+}
+
+input CreateEmailTemplateInput {
+  name: String
+  mjml: String
+  previewBase64: String
+  variables: [String]
+}
+
+input UpdateEmailTemplateInput {
+  name: String
+  mjml: String
+  previewBase64: String
+  variables: [String]
+}
+
+type EmailTemplateConnection {
+  edges: [EmailTemplateEdge]
+  totalCount: Int
+}
+
+type EmailTemplateEdge {
+  node: EmailTemplate
+}

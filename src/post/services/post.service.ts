@@ -3,7 +3,7 @@ import { PostModelToken } from '../constants';
 import { Model } from 'mongoose';
 import { Post } from '../interfaces/post.interface';
 import { CreatePostDto, UpdatePostDto } from '../dto/post.dto';
-import { QueryListResult } from 'common/interfaces/query-list-result.interface';
+import { QueryListResult } from '../../common/interfaces/query-list-result.interface';
 
 @Injectable()
 export class PostService {
@@ -23,6 +23,7 @@ export class PostService {
   async findAll(skip?: number, limit?: number): Promise<QueryListResult<Post>> {
     const allPosts = await this.postModel
       .find()
+      .sort({ releaseDate: -1 })
       .skip(skip || 0)
       .limit(limit || 0)
       .exec();
@@ -36,13 +37,19 @@ export class PostService {
   async findAllPublished(
     skip?: number,
     limit?: number,
+    category?: string,
   ): Promise<QueryListResult<Post>> {
+    const filter = { isPublic: true };
+    if (category && category !== '') {
+      filter['category'] = category;
+    }
     const allPosts = await this.postModel
-      .find({ published: true })
+      .find(filter)
+      .sort({ releaseDate: -1 })
       .skip(skip || 0)
       .limit(limit || 0)
       .exec();
-    const numberOfPosts = await this.count();
+    const numberOfPosts = await this.postModel.find(filter).countDocuments();
     return {
       result: allPosts,
       totalCount: numberOfPosts,
@@ -53,8 +60,8 @@ export class PostService {
     return await this.postModel.findOne({ _id: id }).exec();
   }
 
-  async findOnePublished(id: string): Promise<Post> {
-    return await this.postModel.findOne({ _id: id, published: true }).exec();
+  async findOnePublished(url: string): Promise<Post> {
+    return await this.postModel.findOne({ url: url, isPublic: true }).exec();
   }
 
   async findMany(
@@ -89,5 +96,17 @@ export class PostService {
 
   async delete(id: string): Promise<Post> {
     return await this.postModel.deleteOne({ _id: id }).exec();
+  }
+
+  async release(id: string): Promise<Post> {
+    return await this.postModel
+      .findByIdAndUpdate(id, { $set: { isPublic: true } }, { new: true })
+      .exec();
+  }
+
+  async takeDown(id: string): Promise<Post> {
+    return await this.postModel
+      .findByIdAndUpdate(id, { $set: { isPublic: false } }, { new: true })
+      .exec();
   }
 }

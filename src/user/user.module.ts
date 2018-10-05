@@ -1,11 +1,11 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { DatabaseModule } from 'database/database.module';
+import { DatabaseModule } from '../database/database.module';
 import { UserService } from './services/user.service';
 import { userProviders } from './providers/user.providers';
 import { UserResolver } from './resolvers/user.resolver';
-import { CryptoModule } from 'crypto/crypto.module';
-import { AuthenticationModule } from 'authentication/authentication.module';
-import { CommonModule } from 'common/common.module';
+import { CryptoModule } from '../crypto/crypto.module';
+import { AuthenticationModule } from '../authentication/authentication.module';
+import { CommonModule } from '../common/common.module';
 
 @Module({
   imports: [

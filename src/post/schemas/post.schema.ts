@@ -9,7 +9,9 @@ export const PostSchema = new Schema({
   content: String,
   releaseDate: String,
   category: String,
-  recommendations: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+  isPublic: Boolean,
+  recommendedPosts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+  author: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
 PostSchema.virtual('id').get(function() {

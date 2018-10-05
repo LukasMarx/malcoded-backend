@@ -7,11 +7,16 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from './auth.guard';
 import { JwtStrategy } from '../strategies/jwt.strategy';
+import { GoogleStrategy } from '../strategies/google.strategy';
 
 @Injectable()
 export class RolesGuard extends AuthGuard {
-  constructor(private readonly reflector: Reflector, jwtStrategy: JwtStrategy) {
-    super(jwtStrategy);
+  constructor(
+    private readonly reflector: Reflector,
+    jwtStrategy: JwtStrategy,
+    googleStrategy: GoogleStrategy,
+  ) {
+    super(jwtStrategy, googleStrategy);
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -24,14 +29,16 @@ export class RolesGuard extends AuthGuard {
     }
 
     const ctx = GqlExecutionContext.create(context);
-    const request = ctx.getContext().req;
+    const request = ctx.getContext()
+      ? ctx.getContext().req
+      : context.switchToHttp().getRequest();
 
     const user = request.user;
     const hasRole = () => user.roles.some(role => roles.includes(role));
     return user && user.roles && hasRole();
   }
 
-  handleRequest(err, user, info) {
+  async handleUserRequest(err, user, info) {
     if (err || !user) {
       throw err || new ForbiddenException();
     }

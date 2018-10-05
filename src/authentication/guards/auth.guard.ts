@@ -1,19 +1,15 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request } from 'express';
 import * as passport from 'passport';
 import { JwtStrategy } from '../strategies/jwt.strategy';
-import { UserService } from 'user/services/user.service';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
+import { GoogleStrategy } from '../strategies/google.strategy';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(jwtStrategy: JwtStrategy) {
+  constructor(jwtStrategy: JwtStrategy, googleStrategy: GoogleStrategy) {
+    passport.use(googleStrategy as any);
     passport.use(jwtStrategy);
   }
 
@@ -24,7 +20,7 @@ export class AuthGuard implements CanActivate {
       : context.switchToHttp().getRequest();
     const auth = await this.authenticate(request);
     try {
-      const user = await this.handleRequest(auth.err, auth.user, auth.info);
+      const user = await this.handleRequest(auth.user);
       request.user = user;
       ctx.getContext().user = user;
     } catch (error) {}
@@ -48,7 +44,7 @@ export class AuthGuard implements CanActivate {
     );
   }
 
-  async handleRequest(err, user, info) {
+  async handleRequest(user) {
     return user;
   }
 }

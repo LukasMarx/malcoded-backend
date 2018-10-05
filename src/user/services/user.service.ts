@@ -2,9 +2,9 @@ import { Injectable, Inject } from '@nestjs/common';
 import { UserModelToken } from '../constants';
 import { Model } from 'mongoose';
 import { User } from '../interfaces/user.interface';
-import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
-import { HashingService } from 'crypto/services/hashing.service';
-import { QueryListResult } from 'common/interfaces/query-list-result.interface';
+import { CreateUserDto, UpdateUserDto, FromOAuthDto } from '../dto/user.dto';
+import { HashingService } from '../../crypto/services/hashing.service';
+import { QueryListResult } from '../../common/interfaces/query-list-result.interface';
 
 @Injectable()
 export class UserService {
@@ -16,9 +16,25 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const hashedUser = Object.assign(createUserDto, {
       password: await this.hashingService.hash(createUserDto.password),
+      provider: 'EMAIL',
     });
     const createdUser = new this.userModel(hashedUser);
     return await createdUser.save();
+  }
+
+  async createFromOAuth(fromOAuthDto: FromOAuthDto): Promise<User> {
+    const hashedUser = Object.assign(fromOAuthDto, {
+      isEmailVerified: true,
+    });
+    const result = await this.userModel
+      .update(
+        { email: fromOAuthDto.email, provider: fromOAuthDto.provider },
+        hashedUser,
+        { upsert: true, setDefaultsOnInsert: true, new: true },
+      )
+      .exec();
+
+    return await this.findOneByEmail(fromOAuthDto.email, fromOAuthDto.provider);
   }
 
   async findAll(skip?: number, limit?: number): Promise<QueryListResult<User>> {
@@ -38,8 +54,8 @@ export class UserService {
     return await this.userModel.findOne({ _id: id }).exec();
   }
 
-  async findOneByEmail(email: string): Promise<User> {
-    return await this.userModel.findOne({ email: email }).exec();
+  async findOneByEmail(email: string, provider: string): Promise<User> {
+    return await this.userModel.findOne({ email: email, provider }).exec();
   }
 
   async confirmEmail(email: string): Promise<User> {

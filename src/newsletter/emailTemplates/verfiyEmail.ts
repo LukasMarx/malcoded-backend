@@ -3,7 +3,7 @@ export const verifyEmailTemplate = `<mjml>
     <mj-section>
       <mj-column>
 
-        <mj-image width="500px" src="https://malcoded.com/malcoded.svg"></mj-image>
+        <mj-image width="500px" src="https://malcoded.com/malcoded-email-header.jpg"></mj-image>
 
         <mj-text color="#5B5B5B" font-size="20px" font-family="helvetica">
           Dear user,
@@ -15,7 +15,7 @@ export const verifyEmailTemplate = `<mjml>
         </mj-text>
 
         <mj-text color="#5B5B5B" font-size="20px" font-family="helvetica">
-          If you would like to receive our newsletter with information on web-application development by email, please confirm your request by clicking on the link below. We will then add you to our newsletter mailing list. You can unsubscribe at any time in the
+          If you would like to receive our newsletter with information on web-application development, our products and special offers by email, please confirm your request by clicking on the link below. We will then add you to our newsletter mailing list. You can unsubscribe at any time in the
           future from our newsletter, by clicking on the unsubscribe link included in every newsletter.
         </mj-text>
 
@@ -24,6 +24,18 @@ export const verifyEmailTemplate = `<mjml>
         </mj-text>
         <mj-button align="left" font-size="22px" font-weight="bold" background-color="#c40030" border-radius="25px" color="#fff" font-family="helvetica" href="[[verifyEmailLink]]">
           Subscribe to the newsletter
+        </mj-button>
+      </mj-column>
+    </mj-section>
+    <mj-section>  
+      <mj-column> 
+        <mj-button align="center" border-radius="25px" color="#000" background-color="#eee" href="https://malcoded.com/legal">
+          Legal Notice
+        </mj-button>
+      </mj-column>
+      <mj-column> 
+        <mj-button align="center" border-radius="25px" color="#000" background-color="#eee" href="https://malcoded.com/privacy">
+          Privacy Policy
         </mj-button>
       </mj-column>
     </mj-section>

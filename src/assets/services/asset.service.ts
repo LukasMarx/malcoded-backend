@@ -29,9 +29,13 @@ export class AssetService {
     };
   }
 
-  async findOne(filename: string) {
+  async findOne(filename: string, res: any) {
     try {
-      return this.defaultBucket.openDownloadStreamByName(filename);
+      const stream = this.defaultBucket.openDownloadStreamByName(filename);
+      stream.on('error', error => {
+        res.sendStatus(400);
+      });
+      return stream;
     } catch (error) {
       throw new BadRequestException();
     }

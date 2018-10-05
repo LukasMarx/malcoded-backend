@@ -3,13 +3,13 @@ import * as nodemailer from 'nodemailer';
 import { Transporter } from 'nodemailer';
 import { Email } from '../interfaces/email.interface';
 import { SmtpHost, SmtpUserKey, SmtpPasswordKey } from '../constants';
-import { ConfigService } from 'common/services/config.service';
+import { ConfigService } from '../../common/services/config.service';
 
 @Injectable()
 export class EmailService {
   private transporter: Transporter;
 
-  constructor(private configService: ConfigService) {
+  constructor(configService: ConfigService) {
     this.transporter = nodemailer.createTransport({
       host: SmtpHost,
       auth: {

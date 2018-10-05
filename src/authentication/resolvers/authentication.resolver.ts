@@ -9,7 +9,7 @@ export class AuthResolver {
   @Query()
   async signUpWithEmail(@Args('signUpRequest') signUpRequest) {
     return (
-      (await this.authService.signIn(signUpRequest)) ||
+      (await this.authService.signInWithEmail(signUpRequest)) ||
       new BadRequestException()
     );
   }

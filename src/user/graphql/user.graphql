@@ -2,6 +2,13 @@ type User {
   id: ID
   email: String
   isEmailVerified: Boolean
+  displayName: String
+  image: String
+}
+
+type UserProfile {
+  displayName: String
+  image: String
 }
 
 input CreateUserInput {
@@ -12,6 +19,7 @@ input CreateUserInput {
 type Query {
   getUsers(skip: Int, limit: Int): UserConnection
   user(id: ID!): User
+  me: User
 }
 
 type Mutation {

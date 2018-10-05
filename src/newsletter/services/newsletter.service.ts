@@ -3,13 +3,16 @@ import { SubscribeToNewsletterDto } from '../dto/subscribeToNewsletter.dto';
 import { NewsletterSubscriberToken, NewsletterJwtTokenKey } from '../constants';
 import { NewsletterSubscriber } from '../interfaces/newsletter-subscriber.interface';
 import { Model } from 'mongoose';
-import { ConfigService } from 'common/services/config.service';
+import { ConfigService } from '../../common/services/config.service';
 import * as jwt from 'jsonwebtoken';
 import { NewsletterEmailVerificationToken } from '../interfaces/email-verification-token.interface';
-import { MjmlService } from 'email/services/mjml.service';
-import { EmailService } from 'email/services/email.service';
+import { MjmlService } from '../../email/services/mjml.service';
+import { EmailService } from '../../email/services/email.service';
 import { verifyEmailTemplate } from '../emailTemplates/verfiyEmail';
-import { QueryListResult } from 'common/interfaces/query-list-result.interface';
+import { QueryListResult } from '../../common/interfaces/query-list-result.interface';
+import * as crypto from 'crypto';
+import { SendNewsletterDto } from '../dto/sendNewsletter.dto';
+import { ApplicationDomainKey } from './../../constants';
 
 @Injectable()
 export class NewsletterService {
@@ -23,9 +26,19 @@ export class NewsletterService {
 
   async subscribeToNewsletter(
     subscribeToNewsletterDto: SubscribeToNewsletterDto,
+    ip: string,
   ) {
+    const emailHash = crypto
+      .createHmac('sha256', '1')
+      .update(subscribeToNewsletterDto.email)
+      .digest('hex');
+
     const createdSubscriber = new this.subscriberModel(
-      subscribeToNewsletterDto,
+      Object.assign(subscribeToNewsletterDto, {
+        emailHash: emailHash,
+        signUpIP: ip,
+        signUpDate: new Date().toISOString(),
+      }),
     );
     const subscriber = await createdSubscriber.save();
 
@@ -50,6 +63,13 @@ export class NewsletterService {
     };
   }
 
+  private async findAllConfirmedSubscribers(): Promise<NewsletterSubscriber[]> {
+    const allSubscribers = await this.subscriberModel
+      .find({ isEmailVerified: true, deleted: { $in: [null, false] } })
+      .exec();
+    return allSubscribers;
+  }
+
   async findOneSubscriberById(id: string): Promise<NewsletterSubscriber> {
     return await this.subscriberModel.findOne({ _id: id }).exec();
   }
@@ -61,21 +81,21 @@ export class NewsletterService {
   private async sendNewsletterVerificationEmail(email: string) {
     const html = this.mjmlService.compileToHTML(verifyEmailTemplate, {
       verifyEmailLink:
-        'http://localhost:3000/newsletter/' +
+        `${this.configService.get(ApplicationDomainKey)}/v1/api/newsletter/` +
         jwt.sign(
           { email: email },
           this.configService.get(NewsletterJwtTokenKey),
         ),
     });
     this.emailService.sendEmail({
-      from: this.configService.get('NOREPLY_ADDRESS'),
+      from: 'noreply-malcoded <noreply@malcoded.com>',
       to: email,
       html: html,
-      subject: 'Please confirm!',
+      subject: 'Confirm your Newsletter subscription',
     });
   }
 
-  async verifySubscriberEmailByToken(token: string) {
+  async verifySubscriberEmailByToken(token: string, ip: string) {
     try {
       const decoded = jwt.verify(
         token,
@@ -87,12 +107,55 @@ export class NewsletterService {
       return await this.subscriberModel
         .findOneAndUpdate(
           { email: email },
-          { $set: { isEmailVerified: true } },
+          {
+            $set: {
+              isEmailVerified: true,
+              verificationDate: new Date().toISOString(),
+              verificationIP: ip,
+            },
+          },
           { new: true },
         )
         .exec();
     } catch (error) {
       throw new BadRequestException();
     }
+  }
+
+  async unsubscribe(emailHash: string) {
+    console.log(emailHash);
+    await this.subscriberModel.updateOne(
+      { emailHash },
+      {
+        $unset: { email: '' },
+        $set: { deleted: true, deletedDate: new Date().toUTCString() },
+      },
+    );
+  }
+
+  async sendNewsletterEmail(sendNewsletterDto: SendNewsletterDto) {
+    let replacements = {};
+    if (sendNewsletterDto.replacementString) {
+      replacements = JSON.parse(sendNewsletterDto.replacementString);
+    }
+
+    const subscribers = await this.findAllConfirmedSubscribers();
+    subscribers.forEach(sub => {
+      const html = this.mjmlService.compileToHTML(
+        sendNewsletterDto.mjml,
+        Object.assign(replacements, {
+          _unsubscribe: `${this.configService.get(
+            ApplicationDomainKey,
+          )}/v1/api/newsletter/unsubscribe/${sub.emailHash}`,
+        }),
+      );
+
+      this.emailService.sendEmail({
+        html,
+        from: `Lukas Marx \\(malcoded\) <lukas@malcoded.com>`,
+        to: sub.email,
+        subject: sendNewsletterDto.subject,
+      });
+    });
   }
 }

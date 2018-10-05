@@ -4,8 +4,8 @@ export const CommentSchema = new Schema({
   content: String,
   author: { type: Schema.Types.ObjectId, ref: 'User' },
   post: { type: Schema.Types.ObjectId, ref: 'Post' },
-  creationDate: { type: Schema.Types.Date },
-  updateDate: { type: Schema.Types.Date },
+  creationDate: { type: String, default: () => new Date().toISOString() },
+  updateDate: { type: String, default: () => new Date().toISOString() },
 });
 
 CommentSchema.virtual('id').get(function() {

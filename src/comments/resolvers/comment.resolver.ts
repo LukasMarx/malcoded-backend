@@ -1,26 +1,38 @@
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
-import { Roles } from 'authentication/decorators/roles.decorator';
-import { GraphqlService } from 'common/services/graphql.service';
+import {
+  Resolver,
+  Query,
+  Args,
+  Mutation,
+  ResolveProperty,
+  Parent,
+} from '@nestjs/graphql';
+import { Roles } from '../../authentication/decorators/roles.decorator';
+import { GraphqlService } from '../../common/services/graphql.service';
 import { CommentService } from '../services/comment.service';
 import { CreateCommentDto, UpdateCommentDto } from '../dto/comment.dto';
-import { User } from 'authentication/decorators/user.decorator';
-import { User as IUser } from 'user/interfaces/user.interface';
+import { User } from '../../authentication/decorators/user.decorator';
+import { User as IUser } from '../../user/interfaces/user.interface';
+import { UserService } from '../../user/services/user.service';
 
 @Resolver('Comment')
 export class CommentResolver {
   constructor(
     private readonly commentService: CommentService,
-    private graphQlService: GraphqlService,
+    private readonly graphQlService: GraphqlService,
+    private readonly userService: UserService,
   ) {}
 
-  @Roles('Admin')
+  @Roles('admin')
   @Query('getComments')
   async getComments(@Args('skip') skip: number, @Args('limit') limit: number) {
-    const allPostsListResult = await this.commentService.findAll(skip, limit);
+    const allCommentsListResult = await this.commentService.findAll(
+      skip,
+      limit,
+    );
 
     return this.graphQlService.convertArrayToConnection(
-      allPostsListResult.result,
-      allPostsListResult.totalCount,
+      allCommentsListResult.result,
+      allCommentsListResult.totalCount,
     );
   }
 
@@ -28,12 +40,17 @@ export class CommentResolver {
   async getCommentsForPost(
     @Args('skip') skip: number,
     @Args('limit') limit: number,
+    @Args('postId') postId: string,
   ) {
-    const allPostsListResult = await this.commentService.findAll(skip, limit);
+    const allCommentsListResult = await this.commentService.findAllForPost(
+      postId,
+      skip,
+      limit,
+    );
 
     return this.graphQlService.convertArrayToConnection(
-      allPostsListResult.result,
-      allPostsListResult.totalCount,
+      allCommentsListResult.result,
+      allCommentsListResult.totalCount,
     );
   }
 
@@ -56,8 +73,34 @@ export class CommentResolver {
   @Mutation()
   async updateComment(
     @Args('commentId') commentId: string,
-    @Args('createCommentInput') updateCommentDto: UpdateCommentDto,
+    @Args('updateCommentInput') updateCommentDto: UpdateCommentDto,
+    @User() user: IUser,
   ) {
-    return await this.commentService.updateOne(commentId, updateCommentDto);
+    return await this.commentService.updateOne(
+      commentId,
+      updateCommentDto,
+      user,
+    );
+  }
+
+  @Roles('user')
+  @Mutation()
+  async deleteComment(
+    @Args('commentId') commentId: string,
+    @User() user: IUser,
+  ) {
+    await this.commentService.delete(commentId, user);
+    return commentId;
+  }
+
+  @ResolveProperty('author')
+  async getAuthor(@Parent() comment) {
+    const { author } = comment;
+    const result = await this.userService.findOne(author);
+    return {
+      id: result.id,
+      displayName: result.displayName,
+      image: result.image.toString('base64'),
+    };
   }
 }

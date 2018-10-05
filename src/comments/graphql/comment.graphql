@@ -38,4 +38,5 @@ type Mutation {
     commentId: ID!
     updateCommentInput: UpdateCommentInput!
   ): Comment
+  deleteComment(commentId: ID!): ID
 }

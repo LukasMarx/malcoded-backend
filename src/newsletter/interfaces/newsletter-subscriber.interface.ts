@@ -2,6 +2,10 @@ import { Document } from 'mongoose';
 
 export interface NewsletterSubscriber extends Document {
   email: string;
-  userGaveConsent: boolean;
   isEmailVerified: boolean;
+  emailHash: string;
+  signUpDate: string;
+  signUpIP: string;
+  verificationDate: string;
+  verificationIP: string;
 }
