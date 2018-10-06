@@ -20,7 +20,7 @@ export class AuthenticationController {
     passport.authenticate('google', (err, token, info) => {
       res.send(
         '<script>opener.postMessage(' +
-          JSON.stringify(token) +
+          JSON.stringify({ sender: 'malcoded', token: token }) +
           ',"' +
           this.configService.get(ClientBaseUrlKey) +
           '"); window.close()</script>',
