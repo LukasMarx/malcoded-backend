@@ -1,4 +1,9 @@
-import { Injectable, Inject, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { QueryListResult } from 'common/interfaces/query-list-result.interface';
 import { Asset } from '../interfaces/asset.interface';
 import { Readable, Stream } from 'stream';
@@ -37,7 +42,7 @@ export class AssetService {
       });
       return stream;
     } catch (error) {
-      throw new BadRequestException();
+      throw new NotFoundException();
     }
   }
 
