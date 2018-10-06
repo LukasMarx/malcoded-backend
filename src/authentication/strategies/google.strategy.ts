@@ -3,7 +3,7 @@ import * as google from 'passport-google-oauth20';
 import { ConfigService } from '../../common/services/config.service';
 import { GoogleClientIdKey, GoogleClientSecretKey } from '../constants';
 import { AuthService } from '../services/auth.service';
-import { ApplicationDomainKey } from './../../constants';
+import { ServerBaseUrlKey } from './../../constants';
 
 @Injectable()
 export class GoogleStrategy extends google.Strategy {
@@ -17,7 +17,7 @@ export class GoogleStrategy extends google.Strategy {
         clientID: configService.get(GoogleClientIdKey),
         clientSecret: configService.get(GoogleClientSecretKey),
         callbackURL: `${configService.get(
-          ApplicationDomainKey,
+          ServerBaseUrlKey,
         )}/v1/api/auth/google/callback`,
       },
       (accessToken, refreshToken, profile, done) =>

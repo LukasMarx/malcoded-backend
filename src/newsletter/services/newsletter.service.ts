@@ -12,7 +12,7 @@ import { verifyEmailTemplate } from '../emailTemplates/verfiyEmail';
 import { QueryListResult } from '../../common/interfaces/query-list-result.interface';
 import * as crypto from 'crypto';
 import { SendNewsletterDto } from '../dto/sendNewsletter.dto';
-import { ApplicationDomainKey } from './../../constants';
+import { ServerBaseUrlKey } from './../../constants';
 
 @Injectable()
 export class NewsletterService {
@@ -81,7 +81,7 @@ export class NewsletterService {
   private async sendNewsletterVerificationEmail(email: string) {
     const html = this.mjmlService.compileToHTML(verifyEmailTemplate, {
       verifyEmailLink:
-        `${this.configService.get(ApplicationDomainKey)}/v1/api/newsletter/` +
+        `${this.configService.get(ServerBaseUrlKey)}/v1/api/newsletter/` +
         jwt.sign(
           { email: email },
           this.configService.get(NewsletterJwtTokenKey),
@@ -145,7 +145,7 @@ export class NewsletterService {
         sendNewsletterDto.mjml,
         Object.assign(replacements, {
           _unsubscribe: `${this.configService.get(
-            ApplicationDomainKey,
+            ServerBaseUrlKey,
           )}/v1/api/newsletter/unsubscribe/${sub.emailHash}`,
         }),
       );

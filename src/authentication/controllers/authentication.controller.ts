@@ -1,7 +1,7 @@
 import { Controller, Get, Res, Req, HttpService } from '@nestjs/common';
 import * as passport from 'passport';
 import { ConfigService } from '../../common/services/config.service';
-import { ApplicationDomainKey } from './../../constants';
+import { ClientBaseUrlKey } from './../../constants';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -22,7 +22,7 @@ export class AuthenticationController {
         '<script>opener.postMessage(' +
           JSON.stringify(token) +
           ',"' +
-          this.configService.get(ApplicationDomainKey) +
+          this.configService.get(ClientBaseUrlKey) +
           '"); window.close()</script>',
       );
     })(req, res);

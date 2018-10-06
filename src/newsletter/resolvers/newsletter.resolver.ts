@@ -12,6 +12,8 @@ import { SubscribeToNewsletterDto } from '../dto/subscribeToNewsletter.dto';
 import { GraphqlService } from '../../common/services/graphql.service';
 import { GQLReq } from '../../common/decorators/gql-request.decorator';
 import { SendNewsletterDto } from '../dto/sendNewsletter.dto';
+import * as EmailValidator from 'email-validator';
+import { BadRequestException } from '@nestjs/common';
 
 @Resolver('Newsletter')
 export class NewsletterResolver {
@@ -52,6 +54,9 @@ export class NewsletterResolver {
       req.headers['cf-connecting-ip'] ||
       req.headers['x-forwarded-for'] ||
       req.connection.remoteAddress;
+    if (!EmailValidator.validate(subscribeToNewsletterDto.email)) {
+      throw new BadRequestException();
+    }
     return await this.newsletterService.subscribeToNewsletter(
       subscribeToNewsletterDto,
       ip,

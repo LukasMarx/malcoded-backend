@@ -16,7 +16,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
     JwtModule.register({
       secretOrPrivateKey: process.env.AUTHENTICATION_JWT_TOKEN,
       signOptions: {
-        expiresIn: 3600,
+        expiresIn: 3600 * 24,
       },
     }),
   ],

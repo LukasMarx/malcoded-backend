@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request } from 'express';
 import * as passport from 'passport';
@@ -18,6 +23,7 @@ export class AuthGuard implements CanActivate {
     const request: Request = ctx.getContext()
       ? ctx.getContext().req
       : context.switchToHttp().getRequest();
+
     const auth = await this.authenticate(request);
     try {
       const user = await this.handleRequest(auth.user);
