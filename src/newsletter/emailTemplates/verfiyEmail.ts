@@ -3,7 +3,7 @@ export const verifyEmailTemplate = `<mjml>
     <mj-section>
       <mj-column>
 
-        <mj-image width="500px" src="https://malcoded.com/malcoded-email-header.jpg"></mj-image>
+        <mj-image width="500px" src="https://malcoded.com/malcoded-email-header.png"></mj-image>
 
         <mj-text color="#5B5B5B" font-size="20px" font-family="helvetica">
           Dear user,
