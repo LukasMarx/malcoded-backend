@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PostService } from './services/post.service';
 import { postProviders } from './providers/post.providers';
 import { DatabaseModule } from '../database/database.module';
@@ -14,9 +14,10 @@ import { CommentModule } from '../comments/comment.module';
     DatabaseModule,
     AuthenticationModule,
     UserModule,
-    CommentModule,
+    forwardRef(() => CommentModule),
   ],
 
   providers: [PostService, ...postProviders, PostResolver],
+  exports: [PostService],
 })
 export class PostModule {}
