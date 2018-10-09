@@ -14,6 +14,7 @@ import { User } from '../../authentication/decorators/user.decorator';
 import { User as IUser } from '../../user/interfaces/user.interface';
 import { UserService } from '../../user/services/user.service';
 import { PostService } from './../../post/services/post.service';
+import { create } from 'domain';
 
 @Resolver('Comment')
 export class CommentResolver {
@@ -95,6 +96,31 @@ export class CommentResolver {
     return commentId;
   }
 
+  @Roles('user')
+  @Mutation()
+  async deleteAnswer(
+    @Args('commentId') commentId: string,
+    @Args('answerId') answerId: string,
+    @User() user: IUser,
+  ) {
+    await this.commentService.deleteAnswer(commentId, answerId, user);
+    return commentId;
+  }
+
+  @Roles('user')
+  @Mutation()
+  async answerComment(
+    @Args('commentId') commentId: string,
+    @Args('createCommentInput') createCommentDto: CreateCommentDto,
+    @User() user: IUser,
+  ) {
+    return await this.commentService.answerComment(
+      commentId,
+      user.id,
+      createCommentDto,
+    );
+  }
+
   @ResolveProperty('author')
   async getAuthor(@Parent() comment) {
     const { author } = comment;
@@ -111,5 +137,16 @@ export class CommentResolver {
     const { post } = comment;
     const result = await this.postService.findOne(post);
     return result;
+  }
+
+  @ResolveProperty('answers')
+  async getAnswer(@Parent() comment) {
+    const { answers } = comment;
+    const allCommentsListResult = await this.commentService.findMany(answers);
+
+    return this.graphQlService.convertArrayToConnection(
+      allCommentsListResult.result,
+      allCommentsListResult.totalCount,
+    );
   }
 }

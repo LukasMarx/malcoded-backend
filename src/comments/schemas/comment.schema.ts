@@ -6,6 +6,8 @@ export const CommentSchema = new Schema({
   post: { type: Schema.Types.ObjectId, ref: 'Post' },
   creationDate: { type: String, default: () => new Date().toISOString() },
   updateDate: { type: String, default: () => new Date().toISOString() },
+  isAnswer: { type: Boolean, default: false },
+  answers: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 });
 
 CommentSchema.virtual('id').get(function() {

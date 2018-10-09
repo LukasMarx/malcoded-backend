@@ -6,4 +6,6 @@ export interface Comment extends Document {
   author: User;
   content: string;
   post: Post;
+  isAnswer: Boolean;
+  answers: Comment[];
 }

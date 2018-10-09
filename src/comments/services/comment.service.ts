@@ -1,4 +1,9 @@
-import { Injectable, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { Model } from 'mongoose';
 
@@ -53,7 +58,7 @@ export class CommentService {
     limit?: number,
   ): Promise<QueryListResult<Comment>> {
     const allPosts = await this.commentModel
-      .find({ post: postId })
+      .find({ post: postId, isAnswer: { $in: [null, false] } })
       .sort({ creationDate: -1 })
       .skip(skip || 0)
       .limit(limit || 0)
@@ -91,5 +96,76 @@ export class CommentService {
     return await this.commentModel
       .deleteOne({ _id: id, author: user.id })
       .exec();
+  }
+
+  async deleteAnswer(commentId: string, answerId: string, user: User) {
+    const result = await this.commentModel
+      .deleteOne({ _id: answerId, author: user.id })
+      .exec();
+
+    if (result.n == 1 && result.ok == 1) {
+      await this.commentModel
+        .findByIdAndUpdate(commentId, {
+          $pull: { answers: answerId },
+        })
+        .exec();
+
+      return result;
+    } else {
+      throw new NotFoundException();
+    }
+  }
+
+  async answerComment(
+    commentId: string,
+    authorId: string,
+    createCommentDto: CreateCommentDto,
+  ) {
+    const comment = await this.commentModel.findById(commentId).exec();
+    if (!comment) {
+      throw new BadRequestException();
+    }
+    if (comment.isAnswer) {
+      throw new BadRequestException();
+    }
+    const model = Object.assign(createCommentDto, {
+      author: authorId,
+      post: comment.post,
+      isAnswer: true,
+    });
+    const createdPost = new this.commentModel(model);
+
+    const answer = await createdPost.save();
+
+    this.commentModel
+      .findByIdAndUpdate(commentId, {
+        $push: { answers: [answer.id] },
+      })
+      .exec();
+
+    return answer;
+  }
+
+  async findMany(
+    ids: string[],
+    skip?: number,
+    limit?: number,
+  ): Promise<QueryListResult<Comment>> {
+    const allComments = await this.commentModel
+      .find({ _id: { $in: ids } })
+      .sort({ creationDate: -1 })
+      .skip(skip || 0)
+      .limit(limit || 0)
+      .exec();
+
+    const numberOfComments = await this.commentModel
+      .find({ _id: { $in: ids } })
+      .countDocuments()
+      .exec();
+
+    return {
+      result: allComments,
+      totalCount: numberOfComments,
+    };
   }
 }

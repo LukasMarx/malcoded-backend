@@ -5,6 +5,8 @@ type Comment {
   content: String
   creationDate: String
   updateDate: String
+  isAnswer: Boolean
+  answers: CommentConnection
 }
 
 input CreateCommentInput {
@@ -40,4 +42,9 @@ type Mutation {
     updateCommentInput: UpdateCommentInput!
   ): Comment
   deleteComment(commentId: ID!): ID
+  answerComment(
+    commentId: ID!
+    createCommentInput: CreateCommentInput!
+  ): Comment
+  deleteAnswer(commentId: ID!, answerId: ID!): Comment
 }
