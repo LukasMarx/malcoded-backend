@@ -8,6 +8,7 @@ export const CommentSchema = new Schema({
   updateDate: { type: String, default: () => new Date().toISOString() },
   isAnswer: { type: Boolean, default: false },
   answers: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+  deleted: { type: Boolean, default: false },
 });
 
 CommentSchema.virtual('id').get(function() {

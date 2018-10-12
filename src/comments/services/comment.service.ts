@@ -92,10 +92,19 @@ export class CommentService {
     );
   }
 
-  async delete(id: string, user: User): Promise<void> {
-    return await this.commentModel
-      .deleteOne({ _id: id, author: user.id })
-      .exec();
+  async delete(id: string, user: User): Promise<Comment> {
+    return await this.commentModel.findOneAndUpdate(
+      { _id: id, author: user.id },
+      {
+        $unset: {
+          author: '',
+          content: '',
+        },
+        $set: {
+          deleted: true,
+        },
+      },
+    );
   }
 
   async deleteAnswer(commentId: string, answerId: string, user: User) {

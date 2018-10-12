@@ -124,12 +124,15 @@ export class CommentResolver {
   @ResolveProperty('author')
   async getAuthor(@Parent() comment) {
     const { author } = comment;
-    const result = await this.userService.findOne(author);
-    return {
-      id: result.id,
-      displayName: result.displayName,
-      image: result.image.toString('base64'),
-    };
+    if (author) {
+      const result = await this.userService.findOne(author);
+      return {
+        id: result.id,
+        displayName: result.displayName,
+        image: result.image.toString('base64'),
+      };
+    }
+    return null;
   }
 
   @ResolveProperty('post')
