@@ -24,7 +24,7 @@ export class AssetService {
     const allAssets = await this.defaultBucket
       .find()
       .skip(skip || 0)
-      .limit(skip || 0)
+      .limit(limit || 0)
       .toArray();
 
     const numberOfAssets = await this.defaultBucket.find().count();
