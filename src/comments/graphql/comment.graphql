@@ -1,7 +1,7 @@
 type Comment {
   id: ID
   author: User
-  post: Post
+  post: ID
   content: String
   creationDate: String
   updateDate: String

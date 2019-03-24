@@ -91,7 +91,7 @@ export class UserService {
     });
   }
 
-  async delete(id: string): Promise<User> {
-    return await this.userModel.deleteOne({ _id: id }).exec();
+  async delete(id: string): Promise<void> {
+    await this.userModel.deleteOne({ _id: id }).exec();
   }
 }

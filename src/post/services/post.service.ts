@@ -86,16 +86,16 @@ export class PostService {
     };
   }
 
-  async updateOne(id: string, updatePostDto: UpdatePostDto): Promise<Post> {
-    return await this.postModel
+  async updateOne(id: string, updatePostDto: UpdatePostDto): Promise<void> {
+    await this.postModel
       .findByIdAndUpdate(id, updatePostDto, {
         new: true,
       })
       .exec();
   }
 
-  async delete(id: string): Promise<Post> {
-    return await this.postModel.deleteOne({ _id: id }).exec();
+  async delete(id: string): Promise<void> {
+    await this.postModel.deleteOne({ _id: id }).exec();
   }
 
   async release(id: string): Promise<Post> {

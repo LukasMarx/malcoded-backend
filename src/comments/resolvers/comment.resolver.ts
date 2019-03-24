@@ -135,13 +135,6 @@ export class CommentResolver {
     return null;
   }
 
-  @ResolveProperty('post')
-  async getPost(@Parent() comment) {
-    const { post } = comment;
-    const result = await this.postService.findOne(post);
-    return result;
-  }
-
   @ResolveProperty('answers')
   async getAnswer(@Parent() comment) {
     const { answers } = comment;
