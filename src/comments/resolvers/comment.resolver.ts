@@ -13,7 +13,6 @@ import { CreateCommentDto, UpdateCommentDto } from '../dto/comment.dto';
 import { User } from '../../authentication/decorators/user.decorator';
 import { User as IUser } from '../../user/interfaces/user.interface';
 import { UserService } from '../../user/services/user.service';
-import { PostService } from './../../post/services/post.service';
 import { create } from 'domain';
 
 @Resolver('Comment')
@@ -22,7 +21,6 @@ export class CommentResolver {
     private readonly commentService: CommentService,
     private readonly graphQlService: GraphqlService,
     private readonly userService: UserService,
-    private readonly postService: PostService,
   ) {}
 
   @Roles('admin')

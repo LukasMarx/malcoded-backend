@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PostModule } from './post/post.module';
+
 import { GraphQLModule } from '@nestjs/graphql';
 import { CommonModule } from './common/common.module';
 import { UserModule } from './user/user.module';
@@ -9,11 +9,9 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
 import { EmailModule } from './email/email.module';
 import { CommentModule } from './comments/comment.module';
-import { AssetModule } from './assets/asset.module';
 
 @Module({
   imports: [
-    PostModule,
     GraphQLModule.forRoot({
       typePaths: ['./**/*.graphql'],
       path: '/v1/api/graphql',
@@ -25,7 +23,6 @@ import { AssetModule } from './assets/asset.module';
     NewsletterModule,
     EmailModule,
     CommentModule,
-    AssetModule,
   ],
   controllers: [AppController],
   providers: [AppService],
