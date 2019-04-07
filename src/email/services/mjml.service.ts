@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import mjml2html from 'mjml';
+import mjml2html = require('mjml');
 
 @Injectable()
 export class MjmlService {

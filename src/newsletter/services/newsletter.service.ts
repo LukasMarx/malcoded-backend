@@ -33,14 +33,18 @@ export class NewsletterService {
       .update(subscribeToNewsletterDto.email)
       .digest('hex');
 
-    const createdSubscriber = new this.subscriberModel(
-      Object.assign(subscribeToNewsletterDto, {
-        emailHash: emailHash,
-        signUpIP: ip,
-        signUpDate: new Date().toISOString(),
-      }),
+    const createdSubscriber = Object.assign(subscribeToNewsletterDto, {
+      emailHash,
+      signUpIP: ip,
+      isEmailVerified: false,
+      signUpDate: new Date().toISOString(),
+    });
+
+    const subscriber = await this.subscriberModel.findOneAndUpdate(
+      { email: subscribeToNewsletterDto.email },
+      createdSubscriber,
+      { upsert: true, setDefaultsOnInsert: true, new: true },
     );
-    const subscriber = await createdSubscriber.save();
 
     await this.sendNewsletterVerificationEmail(subscribeToNewsletterDto.email);
     return subscriber;
@@ -79,20 +83,24 @@ export class NewsletterService {
   }
 
   private async sendNewsletterVerificationEmail(email: string) {
-    const html = this.mjmlService.compileToHTML(verifyEmailTemplate, {
-      verifyEmailLink:
-        `${this.configService.get(ServerBaseUrlKey)}/v1/api/newsletter/` +
-        jwt.sign(
-          { email: email },
-          this.configService.get(NewsletterJwtTokenKey),
-        ),
-    });
-    this.emailService.sendEmail({
-      from: 'noreply-malcoded <noreply@malcoded.com>',
-      to: email,
-      html: html,
-      subject: 'Confirm your Newsletter subscription',
-    });
+    try {
+      const html = this.mjmlService.compileToHTML(verifyEmailTemplate, {
+        verifyEmailLink:
+          `${this.configService.get(ServerBaseUrlKey)}/v1/api/newsletter/` +
+          jwt.sign(
+            { email: email },
+            this.configService.get(NewsletterJwtTokenKey),
+          ),
+      });
+      this.emailService.sendEmail({
+        from: 'Malcoded <noreply@malcoded.com>',
+        to: email,
+        html: html,
+        subject: 'Confirm your newsletter subscription',
+      });
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   async verifySubscriberEmailByToken(token: string, ip: string) {
