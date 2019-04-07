@@ -23,7 +23,7 @@ export const verifyEmailTemplate = `<mjml>
       <mj-image src="https://malcoded.com/email/malcoded-logo.png" alt="" align="center" width="150px" />
 
 
-      <mj-image src="https://malcoded.com/email/malcoded-email-header.png" width="600px" alt="" padding="0" href="https://google.com" />
+      <mj-image src="https://malcoded.com/email/malcoded-email-header.png" width="600px" alt="" padding="0" />
     </mj-column>
 
   </mj-section>
