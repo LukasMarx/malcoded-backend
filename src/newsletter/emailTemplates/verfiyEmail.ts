@@ -1,7 +1,7 @@
 export const verifyEmailTemplate = `<mjml>
 <mj-head>
   <mj-title>Discount Light</mj-title>
-  <mj-preview>Pre-header Text</mj-preview>
+  <mj-preview>Hi there! This email address was just used to request our free newsletter on malcoded.com. If you did not submit this request, please ignore this email and we apologize for disturbing you.</mj-preview>
   <mj-attributes>
     <mj-all font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"></mj-all>
     <mj-text font-weight="400" font-size="16px" color="#000000" line-height="24px" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"></mj-text>
