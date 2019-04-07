@@ -65,6 +65,26 @@ export class NewsletterResolver {
 
   @Roles('admin')
   @Mutation()
+  async resendNewsletterConfirmEmail(
+    @Args('email')
+    email: string,
+    @GQLReq() req,
+  ) {
+    const subscriber = await this.newsletterService.findOneSubscriberByEmail(
+      email,
+    );
+    if (!subscriber.isEmailVerified) {
+      await this.newsletterService.sendNewsletterVerificationEmail(
+        subscriber.email,
+      );
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Roles('admin')
+  @Mutation()
   async sendNewsletter(
     @Args('sendNewsletterInput') sendNewsletterDto: SendNewsletterDto,
   ) {

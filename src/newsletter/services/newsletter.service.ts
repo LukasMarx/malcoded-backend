@@ -82,7 +82,7 @@ export class NewsletterService {
     return await this.subscriberModel.findOne({ email: email }).exec();
   }
 
-  private async sendNewsletterVerificationEmail(email: string) {
+  public async sendNewsletterVerificationEmail(email: string) {
     try {
       const html = this.mjmlService.compileToHTML(verifyEmailTemplate, {
         verifyEmailLink:

@@ -11,6 +11,7 @@ type Mutation {
     subscribeToNewsletterInput: SubscribeToNewsletterInput
   ): PublicNewsletterSubscriber
 
+  resendNewsletterConfirmEmail(email: String): Boolean
   sendNewsletter(sendNewsletterInput: SendNewsletterInput): Boolean
 }
 
