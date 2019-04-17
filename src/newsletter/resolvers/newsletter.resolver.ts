@@ -44,6 +44,19 @@ export class NewsletterResolver {
     return await this.newsletterService.findOneSubscriberById(id);
   }
 
+  @Roles('admin')
+  @Query('getNewsletterAnalytics')
+  async getNewsletterAnalytics(
+    @Args('from') from: string,
+    @Args('to') to: string,
+  ) {
+    const analyticsData = await this.newsletterService.getNewsletterAnalytics(
+      from,
+      to,
+    );
+    return analyticsData;
+  }
+
   @Mutation()
   async subscribeToNewsletter(
     @Args('subscribeToNewsletterInput')

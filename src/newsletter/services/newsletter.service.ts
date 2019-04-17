@@ -166,4 +166,187 @@ export class NewsletterService {
       });
     });
   }
+
+  async getNewsletterAnalytics(from: string, to: string) {
+    const signUpCountsPromise = this.subscriberModel
+      .aggregate([
+        { $match: { signUpDate: { $gt: from, $lt: to } } },
+        {
+          $project: {
+            signUpDate: '$signUpDate',
+            dayOfSingUp: {
+              $add: [
+                {
+                  $dayOfYear: {
+                    $dateFromString: {
+                      dateString: '$signUpDate',
+                    },
+                  },
+                },
+                {
+                  $multiply: [
+                    400,
+                    {
+                      $year: {
+                        $dateFromString: {
+                          dateString: '$signUpDate',
+                        },
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        {
+          $group: {
+            _id: '$dayOfSingUp',
+            count: { $sum: 1 },
+            signUpDate: { $first: '$signUpDate' },
+          },
+        },
+      ])
+      .exec();
+
+    const confirmCountsPromise = this.subscriberModel
+      .aggregate([
+        { $match: { verificationDate: { $gt: from, $lt: to } } },
+        {
+          $project: {
+            verificationDate: 1,
+            dayOfConfirm: {
+              $add: [
+                {
+                  $dayOfYear: {
+                    $dateFromString: {
+                      dateString: '$verificationDate',
+                    },
+                  },
+                },
+                {
+                  $multiply: [
+                    400,
+                    {
+                      $year: {
+                        $dateFromString: {
+                          dateString: '$verificationDate',
+                        },
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        {
+          $group: {
+            _id: '$dayOfConfirm',
+            count: { $sum: 1 },
+            verificationDate: { $first: '$verificationDate' },
+          },
+        },
+      ])
+      .exec();
+
+    const deleteCountsPromise = this.subscriberModel
+      .aggregate([
+        { $match: { verificationDate: { $gt: from, $lt: to }, deleted: true } },
+        {
+          $project: {
+            deletedDate: 1,
+            dayOfDelete: {
+              $add: [
+                {
+                  $dayOfYear: {
+                    $dateFromString: {
+                      dateString: '$deletedDate',
+                    },
+                  },
+                },
+                {
+                  $multiply: [
+                    400,
+                    {
+                      $year: {
+                        $dateFromString: {
+                          dateString: '$deletedDate',
+                        },
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        {
+          $group: {
+            _id: '$dayOfDelete',
+            count: { $sum: 1 },
+            deletedDate: { $first: '$deletedDate' },
+          },
+        },
+      ])
+      .exec();
+
+    const [singups, confirmations, unsubscribes] = await Promise.all([
+      signUpCountsPromise,
+      confirmCountsPromise,
+      deleteCountsPromise,
+    ]);
+
+    const startDate = new Date(from);
+    const endDate = new Date(to);
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    const analyticsData = {
+      signups: [],
+      confirmations: [],
+      unsubscribes: [],
+    };
+
+    var signupMap = singups.reduce(function(map, obj) {
+      map[new Date(obj.signUpDate.split('T')[0]).toISOString()] = obj.count;
+      return map;
+    }, {});
+
+    var confirmMap = confirmations.reduce(function(map, obj) {
+      map[new Date(obj.verificationDate.split('T')[0]).toISOString()] =
+        obj.count;
+      return map;
+    }, {});
+
+    var unsubscribesMap = unsubscribes.reduce(function(map, obj) {
+      map[new Date(obj.deletedDate.split('T')[0]).toISOString()] = obj.count;
+      return map;
+    }, {});
+
+    for (let i = 0; i < diffDays; i++) {
+      const date = this.addDays(startDate, i);
+      const key = new Date(date.toISOString().split('T')[0]).toISOString();
+      analyticsData.signups.push({
+        key,
+        count: signupMap[key] || 0,
+      });
+      analyticsData.confirmations.push({
+        key,
+        count: confirmMap[key] || 0,
+      });
+      analyticsData.unsubscribes.push({
+        key,
+        count: unsubscribesMap[key] || 0,
+      });
+    }
+
+    return analyticsData;
+  }
+
+  addDays(date, days) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
 }
