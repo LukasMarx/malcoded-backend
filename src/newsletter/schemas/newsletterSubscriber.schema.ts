@@ -2,7 +2,10 @@ import { Schema } from 'mongoose';
 
 export const NewsletterSubscriberSchema = new Schema(
   {
-    email: { type: String, index: { unique: true, background: true } },
+    email: {
+      type: String,
+      index: { unique: true, sparse: true, background: true },
+    },
     isEmailVerified: { type: Boolean, default: false },
     emailHash: { type: String, index: { unique: true, background: true } },
     signUpDate: String,
