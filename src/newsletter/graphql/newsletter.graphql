@@ -4,6 +4,7 @@ type Query {
     limit: Int
   ): NewsletterSubscriberConnection
   getNewsletterAnalytics(from: String!, to: String!): NewsletterAnalytics
+  countVerifiedSubscribers(): Int
   newsletterSubscriber(id: ID!): NewsletterSubscriber
 }
 

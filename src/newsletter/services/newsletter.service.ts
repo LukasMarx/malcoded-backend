@@ -141,6 +141,12 @@ export class NewsletterService {
     );
   }
 
+  async countVerifidedSubscribers() {
+    return await this.subscriberModel
+      .countDocuments({ isEmailVerified: true })
+      .exec();
+  }
+
   async sendNewsletterEmail(sendNewsletterDto: SendNewsletterDto) {
     let replacements = {};
     if (sendNewsletterDto.replacementString) {

@@ -45,6 +45,12 @@ export class NewsletterResolver {
   }
 
   @Roles('admin')
+  @Query('countVerifiedSubscribers')
+  async countVerifiedSubscribers() {
+    return await this.newsletterService.countVerifidedSubscribers();
+  }
+
+  @Roles('admin')
   @Query('getNewsletterAnalytics')
   async getNewsletterAnalytics(
     @Args('from') from: string,
