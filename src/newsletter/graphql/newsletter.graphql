@@ -3,6 +3,7 @@ type Query {
     skip: Int
     limit: Int
   ): NewsletterSubscriberConnection
+  getNewsletterAnalytics(from: String!, to: String!): NewsletterAnalytics
   newsletterSubscriber(id: ID!): NewsletterSubscriber
 }
 
@@ -24,6 +25,19 @@ type NewsletterSubscriber {
   verificationIP: String
 }
 
+type CountType {
+  key: String!
+  count: Int
+}
+
+type NewsletterAnalytics {
+  from: String
+  to: String
+  signups: [CountType]
+  confirmations: [CountType]
+  unsubscribes: [CountType]
+}
+
 type PublicNewsletterSubscriber {
   email: String
 }
@@ -37,6 +51,7 @@ type NewsletterSubscriberConnection {
   edges: [NewsletterSubscriberEdge]
   totalCount: Int
 }
+
 type NewsletterSubscriberEdge {
   node: NewsletterSubscriber
 }
