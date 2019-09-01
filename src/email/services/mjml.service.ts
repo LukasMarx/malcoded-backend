@@ -3,6 +3,9 @@ import mjml2html = require('mjml');
 
 @Injectable()
 export class MjmlService {
+
+  constructor(){}
+
   compileToHTML(mjml: string, replacements: { [key: string]: string }): string {
     for (let key in replacements) {
       mjml = mjml.replace(
@@ -19,6 +22,7 @@ export class MjmlService {
         return result.html;
       }
     } catch (error) {
+      console.error(error);
       throw new BadRequestException();
     }
   }
