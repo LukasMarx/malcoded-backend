@@ -97,13 +97,13 @@ export class GeoIpController {
   };
 
   @Get('/isEu')
-  async isEU(@Headers('CF-IPCountry') location) {
+  async isEU(@Headers('cf-ipcountry') location) {
     if (!location || location === 'XX' || location === 'T1') {
-      return { clearResult: false, isEU: true };
+      return { clearResult: false, isEU: true, location };
     }
     if (this.isoCodes[location]) {
-      return { clearResult: true, isEU: true };
+      return { clearResult: true, isEU: true, location };
     }
-    return { clearResult: true, isEU: false };
+    return { clearResult: true, isEU: false, location };
   }
 }
