@@ -99,11 +99,11 @@ export class GeoIpController {
   @Get('/isEu')
   async isEU(@Headers('HTTP_CF_IPCOUNTRY') location) {
     if (!location) {
-      return true;
+      return { clearResult: false, isEU: true };
     }
     if (this.isoCodes[location]) {
-      return true;
+      return { clearResult: true, isEU: true };
     }
-    return false;
+    return { clearResult: true, isEU: false };
   }
 }
