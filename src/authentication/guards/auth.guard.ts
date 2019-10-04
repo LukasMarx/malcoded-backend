@@ -19,10 +19,16 @@ export class AuthGuard implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    if (context.getType() === 'ws') {
+      return true;
+    }
+
     const ctx = GqlExecutionContext.create(context);
-    const request: Request = ctx.getContext()
-      ? ctx.getContext().req
-      : context.switchToHttp().getRequest();
+
+    let request: Request = context.switchToHttp().getRequest();
+    if (!request) {
+      request = ctx.getContext().req;
+    }
 
     const auth = await this.authenticate(request);
     try {
