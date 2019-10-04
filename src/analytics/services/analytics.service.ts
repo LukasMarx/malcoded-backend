@@ -3,11 +3,11 @@ import { Model } from 'mongoose';
 import {
   AnalyticsEvent,
   AnalyticsSession,
-} from 'analytics/interfaces/analyticsSession.interface';
+} from './../../analytics/interfaces/analyticsSession.interface';
 import {
   AnalyticsEventToken,
   AnalyticsSessionToken,
-} from 'analytics/constants';
+} from './../../analytics/constants';
 
 @Injectable()
 export class AnalyticsService {

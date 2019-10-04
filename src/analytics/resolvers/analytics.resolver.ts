@@ -1,8 +1,8 @@
-import { Roles } from 'authentication/decorators/roles.decorator';
+import { Roles } from './../../authentication/decorators/roles.decorator';
 
 import { Args, Resolver, Query } from '@nestjs/graphql';
 
-import { AnalyticsService } from 'analytics/services/analytics.service';
+import { AnalyticsService } from './../../analytics/services/analytics.service';
 
 @Resolver('Analytics')
 export class AnalyticsResolver {

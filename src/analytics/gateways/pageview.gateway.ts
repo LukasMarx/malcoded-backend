@@ -11,14 +11,14 @@ import {
   AnalyticsEvent,
 } from './../interfaces/analyticsSession.interface';
 import { Client, Server } from 'socket.io';
-import { AnalyticsEventDto } from 'analytics/dto/analyticsEvent.dto';
+import { AnalyticsEventDto } from './../../analytics/dto/analyticsEvent.dto';
 import {
   AnalyticsSessionToken,
   AnalyticsEventToken,
-} from 'analytics/constants';
+} from '../../analytics/constants';
 import { Inject } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { Roles } from 'authentication/decorators/roles.decorator';
+import { Roles } from './../../authentication/decorators/roles.decorator';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { ObjectId } from 'bson';
 
