@@ -10,7 +10,8 @@ import { NewsletterModule } from './newsletter/newsletter.module';
 import { EmailModule } from './email/email.module';
 import { CommentModule } from './comments/comment.module';
 import { GeoIpModule } from './geoIp/geoip.module';
-
+import { AnalyticsModule } from './analytics/analytics.module';
+import { PageviewGateway } from 'analytics/gateways/pageview.gateway';
 @Module({
   imports: [
     GraphQLModule.forRoot({
@@ -25,6 +26,7 @@ import { GeoIpModule } from './geoIp/geoip.module';
     EmailModule,
     CommentModule,
     GeoIpModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

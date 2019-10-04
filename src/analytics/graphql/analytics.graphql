@@ -1,0 +1,21 @@
+
+type Query {
+  getPageviewAnalytics(
+    from: String!
+    to: String!
+  ): PageviewAnalytics
+}
+
+type CountType {
+  key: String!
+  count: Int
+}
+
+type PageviewAnalytics {
+  from: String
+  to: String
+  sessions: [CountType]
+  sessionsPreviousPeriod: [CountType]
+  pageviews: [CountType]
+  pageviewsPreviousPeriod: [CountType]
+}
