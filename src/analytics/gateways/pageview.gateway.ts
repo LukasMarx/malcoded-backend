@@ -21,6 +21,7 @@ import { Model } from 'mongoose';
 import { Roles } from './../../authentication/decorators/roles.decorator';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { ObjectId } from 'bson';
+import { v4 } from 'uuid';
 
 export const EVENT_PAGEVIEW = 'pageview';
 
@@ -45,6 +46,7 @@ export class PageviewGateway
 
   handleConnection(client: Client, ...args: any[]) {
     console.log('connected');
+    client.id = v4();
   }
 
   async handleDisconnect(client: Client) {
