@@ -109,6 +109,50 @@ export class AnalyticsService {
     return analyticsData;
   }
 
+  async getPageviewsToday() {
+    const today = new Date(new Date().toISOString().split('T')[0]);
+    const tomorrow = this.addDays(today, 1);
+    return this.analytisEventModel
+      .countDocuments({
+        timestamp: { $gt: today, $lt: tomorrow },
+        type: 'pageview',
+      })
+      .exec();
+  }
+
+  async getBrowserStatistics(from: string, to: string) {
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+    const browsers: any[] = await this.analytisSessionModel
+      .aggregate([
+        {
+          $match: {
+            timestamp: { $gt: fromDate, $lt: toDate },
+          },
+        },
+        {
+          $group: {
+            _id: '$browser',
+            count: { $sum: 1 },
+          },
+        },
+      ])
+      .exec();
+
+    const result = browsers.map(browser => {
+      return {
+        key: browser._id || 'N/S',
+        count: browser.count,
+      };
+    });
+
+    return {
+      from: from,
+      to: to,
+      statistics: result,
+    };
+  }
+
   private async getPageviewsInPeriod(from: Date, to: Date) {
     return this.analytisEventModel
       .aggregate([

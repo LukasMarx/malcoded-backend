@@ -20,4 +20,17 @@ export class AnalyticsResolver {
     );
     return analyticsData;
   }
+
+  @Roles('admin')
+  @Query('getBrowserStatistics')
+  async getBrowserStatistics(
+    @Args('from') from: string,
+    @Args('to') to: string,
+  ) {
+    const analyticsData = await this.analyticsService.getBrowserStatistics(
+      from,
+      to,
+    );
+    return analyticsData;
+  }
 }

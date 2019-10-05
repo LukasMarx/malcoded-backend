@@ -23,6 +23,7 @@ import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { ObjectId } from 'bson';
 import { v4 } from 'uuid';
 import * as UaParser from 'ua-parser-js';
+import { AnalyticsService } from 'analytics/services/analytics.service';
 
 export const EVENT_PAGEVIEW = 'pageview';
 
@@ -35,6 +36,10 @@ export class PageviewGateway
     [key: string]: Subject<WsResponse<Partial<AnalyticsSession>[]>>;
   } = {};
 
+  private livePageviewsTodaySubscribers: {
+    [key: string]: Subject<WsResponse<number>>;
+  } = {};
+
   @WebSocketServer()
   server: Server;
 
@@ -43,6 +48,7 @@ export class PageviewGateway
     private readonly sessionModel: Model<AnalyticsSession>,
     @Inject(AnalyticsEventToken)
     private readonly eventModel: Model<AnalyticsEvent>,
+    private analyticsService: AnalyticsService,
   ) {}
 
   handleConnection(client: any, ...args: any[]) {
@@ -80,12 +86,14 @@ export class PageviewGateway
       liveAnalyticsSubscription.complete();
       delete this.liveAnalyticsSubscribers[client.id];
     }
-    Object.values(this.liveAnalyticsSubscribers).forEach(subject => {
-      subject.next({
-        event: 'updateLiveAnalytics',
-        data: Object.values(this.activeSessions),
-      });
-    });
+    const livePageviewsTodaySubscription = this.livePageviewsTodaySubscribers[
+      client.id
+    ];
+    if (livePageviewsTodaySubscription) {
+      livePageviewsTodaySubscription.complete();
+      delete this.livePageviewsTodaySubscribers[client.id];
+    }
+    Promise.all([this.notifyAboutLiveAnalytics()]);
   }
 
   @SubscribeMessage('event')
@@ -119,15 +127,12 @@ export class PageviewGateway
       session.lastPageLocation = data.pageLocation;
     }
 
-    Object.values(this.liveAnalyticsSubscribers).forEach(subject => {
-      subject.next({
-        event: 'updateLiveAnalytics',
-        data: Object.values(this.activeSessions),
-      });
-    });
+    Promise.all([
+      this.notifyAboutLiveAnalytics(),
+      this.notifyAboutLivePageviewsToday(),
+    ]);
   }
 
-  @Roles('admin')
   @SubscribeMessage('registerForLiveAnalytics')
   registerUserForLiveAnalyitcs(
     client: Client,
@@ -138,6 +143,27 @@ export class PageviewGateway
       data: Object.values(this.activeSessions) as any,
     });
     this.liveAnalyticsSubscribers[client.id] = subject;
+
+    return subject.asObservable();
+  }
+
+  @SubscribeMessage('registerForLivePageviewsToday')
+  registerUserForLivePageviewsToday(
+    client: Client,
+  ): Observable<WsResponse<number>> {
+    console.log('subscribed');
+    var subject = new BehaviorSubject<WsResponse<number>>({
+      event: 'updateLivePageviewsToday',
+      data: 0,
+    });
+    this.livePageviewsTodaySubscribers[client.id] = subject;
+
+    this.analyticsService.getPageviewsToday().then(pageViewsToday => {
+      subject.next({
+        event: 'updateLivePageviewsToday',
+        data: pageViewsToday,
+      });
+    });
 
     return subject.asObservable();
   }
@@ -161,5 +187,27 @@ export class PageviewGateway
       isOnMobile,
     });
     return session;
+  }
+
+  private async notifyAboutLiveAnalytics() {
+    Object.values(this.liveAnalyticsSubscribers).forEach(subject => {
+      subject.next({
+        event: 'updateLiveAnalytics',
+        data: Object.values(this.activeSessions),
+      });
+    });
+  }
+
+  private async notifyAboutLivePageviewsToday() {
+    const subscribers = Object.values(this.livePageviewsTodaySubscribers);
+    if (subscribers.length > 0) {
+      const pageViewsToday = await this.analyticsService.getPageviewsToday();
+      Object.values(this.livePageviewsTodaySubscribers).forEach(subject => {
+        subject.next({
+          event: 'updateLivePageviewsToday',
+          data: pageViewsToday,
+        });
+      });
+    }
   }
 }
