@@ -24,10 +24,7 @@ import { ObjectId } from 'bson';
 
 export const EVENT_PAGEVIEW = 'pageview';
 
-@WebSocketGateway({
-  path: '/v1/api/ws',
-  // transports: ['websocket'],
-})
+@WebSocketGateway(3001)
 export class PageviewGateway
   implements OnGatewayConnection, OnGatewayDisconnect {
   private activeSessions: { [key: string]: Partial<AnalyticsSession> } = {};
@@ -35,6 +32,9 @@ export class PageviewGateway
   private liveAnalyticsSubscribers: {
     [key: string]: Subject<WsResponse<Partial<AnalyticsSession>[]>>;
   } = {};
+
+  @WebSocketServer()
+  server: Server;
 
   constructor(
     @Inject(AnalyticsSessionToken)
@@ -48,6 +48,7 @@ export class PageviewGateway
   }
 
   async handleDisconnect(client: Client) {
+    console.log('disconnect');
     const session = this.activeSessions[client.id];
     if (session) {
       if (session.timestamp) {
@@ -69,9 +70,6 @@ export class PageviewGateway
       });
     });
   }
-
-  @WebSocketServer()
-  server: Server;
 
   @SubscribeMessage('event')
   async onAnalyticsEvent(client: Client, data: AnalyticsEventDto) {

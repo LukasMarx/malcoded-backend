@@ -114,12 +114,12 @@
     express "4.17.1"
     multer "1.4.2"
 
-"@nestjs/platform-socket.io@^6.8.0":
-  version "6.8.0"
-  resolved "https://registry.yarnpkg.com/@nestjs/platform-socket.io/-/platform-socket.io-6.8.0.tgz#7bb32ad03cb3f3ed2c25c9d0f7632d3147be390b"
-  integrity sha512-isjdEL94OY5b+n81tEHe2yUDdNfwnC5K/miCmUrazuXzS6NMMKStLwhH55AB9QPWFxl3fCpw1is3b7E4k8NylA==
+"@nestjs/platform-ws@^6.8.2":
+  version "6.8.2"
+  resolved "https://registry.yarnpkg.com/@nestjs/platform-ws/-/platform-ws-6.8.2.tgz#fb6f018bc98fdd67bb2c4a165f78588c0801734e"
+  integrity sha512-C6QQSIyq157YieBdQIMut8PpGSkvx3GKm67PTxXQv3d+iM3H893T3d8eUHozOleIp7ZODoSt1PHqbP56qQ6Etg==
   dependencies:
-    socket.io "2.3.0"
+    ws "7.1.2"
 
 "@nestjs/testing@^5.1.0":
   version "5.7.4"
@@ -7676,7 +7676,7 @@ socket.io-parser@~3.4.0:
     debug "~4.1.0"
     isarray "2.0.1"
 
-socket.io@2.3.0, socket.io@^2.3.0:
+socket.io@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/socket.io/-/socket.io-2.3.0.tgz#cd762ed6a4faeca59bc1f3e243c0969311eb73fb"
   integrity sha512-2A892lrj0GcgR/9Qk81EaY2gYhCBxurV0PfmmESO6p27QPrUK1J3zdns+5QPqvUYK2q657nSj0guoIil9+7eFg==
@@ -8809,6 +8809,13 @@ write-file-atomic@^2.0.0, write-file-atomic@^2.1.0:
     imurmurhash "^0.1.4"
     signal-exit "^3.0.2"
 
+ws@7.1.2, ws@^7.1.2:
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.1.2.tgz#c672d1629de8bb27a9699eb599be47aeeedd8f73"
+  integrity sha512-gftXq3XI81cJCgkUiAVixA0raD9IVmXqsylCrjRygw4+UOOGzPoxnQ6r/CnVL9i+mDncJo94tSkyrtuuQVBmrg==
+  dependencies:
+    async-limiter "^1.0.0"
+
 ws@^5.2.0:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/ws/-/ws-5.2.2.tgz#dffef14866b8e8dc9133582514d1befaf96e980f"
@@ -8822,13 +8829,6 @@ ws@^6.0.0:
   integrity sha512-deZYUNlt2O4buFCa3t5bKLf8A7FPP/TVjwOeVNpw818Ma5nk4MLXls2eoEGS39o8119QIYxTrTDoPQ5B/gTD6w==
   dependencies:
     async-limiter "~1.0.0"
-
-ws@^7.1.2:
-  version "7.1.2"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-7.1.2.tgz#c672d1629de8bb27a9699eb599be47aeeedd8f73"
-  integrity sha512-gftXq3XI81cJCgkUiAVixA0raD9IVmXqsylCrjRygw4+UOOGzPoxnQ6r/CnVL9i+mDncJo94tSkyrtuuQVBmrg==
-  dependencies:
-    async-limiter "^1.0.0"
 
 ws@~6.1.0:
   version "6.1.4"
