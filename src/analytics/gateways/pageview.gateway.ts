@@ -22,6 +22,7 @@ import { Roles } from './../../authentication/decorators/roles.decorator';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { ObjectId } from 'bson';
 import { v4 } from 'uuid';
+import * as UaParser from 'ua-parser-js';
 
 export const EVENT_PAGEVIEW = 'pageview';
 
@@ -44,12 +45,26 @@ export class PageviewGateway
     private readonly eventModel: Model<AnalyticsEvent>,
   ) {}
 
-  handleConnection(client: Client, ...args: any[]) {
-    console.log('connected');
+  handleConnection(client: any, ...args: any[]) {
+    if (args && args.length > 0) {
+      const headers = args[0].headers;
+      if (headers['cf-ipcountry']) {
+        client.userLocation = headers['cf-ipcountry'];
+      }
+      if (headers['user-agent']) {
+        const ua = UaParser(headers['user-agent']);
+        if (ua) {
+          const browser = ua.browser;
+          client.browser = browser;
+          const device = ua.device;
+          client.device = device;
+        }
+      }
+    }
     client.id = v4();
   }
 
-  async handleDisconnect(client: Client) {
+  async handleDisconnect(client: any) {
     console.log('disconnect');
     const session = this.activeSessions[client.id];
     if (session) {
@@ -74,10 +89,15 @@ export class PageviewGateway
   }
 
   @SubscribeMessage('event')
-  async onAnalyticsEvent(client: Client, data: AnalyticsEventDto) {
+  async onAnalyticsEvent(client: any, data: AnalyticsEventDto) {
     if (!this.activeSessions[client.id]) {
       console.log('creating new session');
-      let session = this.createSession(data);
+      let session = this.createSession(
+        client.userLocation,
+        client.browser,
+        client.device,
+        data,
+      );
       session = await session.save();
       this.activeSessions[client.id] = session;
     }
@@ -122,12 +142,23 @@ export class PageviewGateway
     return subject.asObservable();
   }
 
-  private createSession(data: AnalyticsEventDto) {
+  private createSession(
+    location: string,
+    browser: any,
+    device: any,
+    data: AnalyticsEventDto,
+  ) {
+    const isOnMobile =
+      device && (device.type === 'mobile' || device.type === 'tablet');
+
     const session = new this.sessionModel({
       duration: undefined,
-      userLocation: data.userLocation,
+      userLocation: location || data.userLocation,
       numPageViews: 0,
       lastPageLocation: undefined,
+      browser: browser ? browser.name : undefined,
+      browserVersion: browser ? browser.version : undefined,
+      isOnMobile,
     });
     return session;
   }

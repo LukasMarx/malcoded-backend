@@ -6,8 +6,8 @@ export interface AnalyticsSession extends Document {
   duration: Number;
   userLocation: string;
   numPageViews: number;
-  browserType: string;
-  userAgent: string;
+  browser: string;
+  browserVersion: string;
   isOnMobile: boolean;
   lastPageLocation: string;
 }

@@ -24,9 +24,9 @@ export const AnalyticsSessionSchema = new Schema({
   duration: Number,
   userLocation: String,
   numPageViews: Number,
-  browserType: String,
+  browser: String,
+  browserVersion: String,
   isOnMobile: Boolean,
-  userAgent: String,
   lastPageLocation: String,
 });
 
