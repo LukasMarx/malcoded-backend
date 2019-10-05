@@ -23,7 +23,7 @@ import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { ObjectId } from 'bson';
 import { v4 } from 'uuid';
 import * as UaParser from 'ua-parser-js';
-import { AnalyticsService } from 'analytics/services/analytics.service';
+import { AnalyticsService } from './../../analytics/services/analytics.service';
 
 export const EVENT_PAGEVIEW = 'pageview';
 
