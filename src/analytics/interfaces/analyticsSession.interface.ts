@@ -16,6 +16,7 @@ export interface AnalyticsEvent extends Document {
   sessionId: ObjectId;
   timestamp: Date;
   type: string;
+  subType: string;
   pageLocation: string;
   args?: string[];
 }

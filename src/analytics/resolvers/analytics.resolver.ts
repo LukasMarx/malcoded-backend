@@ -33,4 +33,17 @@ export class AnalyticsResolver {
     );
     return analyticsData;
   }
+
+  @Roles('admin')
+  @Query('getAffilitateStatistics')
+  async getAffilitateStatistics(
+    @Args('from') from: string,
+    @Args('to') to: string,
+  ) {
+    const affiliateStatistics = await this.analyticsService.getAffiliateStatistics(
+      from,
+      to,
+    );
+    return affiliateStatistics;
+  }
 }

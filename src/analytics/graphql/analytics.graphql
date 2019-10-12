@@ -9,6 +9,11 @@ type Query {
     from: String!
     to: String!
   ): BrowserStatistics
+
+  getAffilitateStatistics(
+    from: String!
+    to: String
+  ): AffiliateStatistics
 }
 
 type CountType {
@@ -29,4 +34,16 @@ type BrowserStatistics {
   from: String
   to: String
   statistics: [CountType]
+}
+
+type AffiliateStat {
+  affiliate: String!
+  views: Int
+  clicks: Int
+}
+
+type AffiliateStatistics {
+  from: String
+  to: String
+  statistics: [AffiliateStat]
 }

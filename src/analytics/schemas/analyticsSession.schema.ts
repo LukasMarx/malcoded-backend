@@ -10,7 +10,11 @@ export const AnalyticsEventSchema = new Schema({
     type: Schema.Types.ObjectId,
     index: { unique: false, background: true },
   },
-  type: String,
+  type: {
+    type: String,
+    index: { unique: false, background: true },
+  },
+  subType: String,
   pageLocation: String,
   args: [String],
 });

@@ -113,6 +113,7 @@ export class PageviewGateway
 
     const event = new this.eventModel({
       type: data.type,
+      subType: data.subType,
       pageLocation: data.pageLocation,
       args: data.args,
       timestamp: new Date(),
@@ -122,7 +123,6 @@ export class PageviewGateway
     await event.save();
 
     if (event.type === EVENT_PAGEVIEW) {
-      console.log('event');
       session.numPageViews = session.numPageViews + 1;
       session.lastPageLocation = data.pageLocation;
     }

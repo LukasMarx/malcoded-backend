@@ -153,6 +153,40 @@ export class AnalyticsService {
     };
   }
 
+  async getAffiliateStatistics(from: string, to: string) {
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+
+    const affiliateViews = await this.getEventsInPeriod(
+      fromDate,
+      toDate,
+      'affiliateView',
+      'subType',
+    );
+    const affiliateClicks = await this.getEventsInPeriod(
+      fromDate,
+      toDate,
+      'affiliateClick',
+      'subType',
+    );
+
+    const result = [];
+
+    for (let affiliate of affiliateViews) {
+      result.push({
+        affiliate,
+        views: affiliateViews[affiliate],
+        clicks: affiliateClicks[affiliate],
+      });
+    }
+
+    return {
+      from,
+      to,
+      statistics: result,
+    };
+  }
+
   private async getPageviewsInPeriod(from: Date, to: Date) {
     return this.analytisEventModel
       .aggregate([
@@ -191,6 +225,33 @@ export class AnalyticsService {
         },
       ])
       .exec();
+  }
+
+  private async getEventsInPeriod(
+    from: Date,
+    to: Date,
+    type: string,
+    groupBy?: string,
+  ) {
+    const query: any[] = [
+      {
+        $match: {
+          timestamp: { $gt: from, $lt: to },
+          type: type,
+        },
+      },
+    ];
+
+    if (groupBy) {
+      query.push({
+        $group: {
+          _id: `$${groupBy}`,
+          count: { $sum: 1 },
+        },
+      });
+    }
+
+    return this.analytisEventModel.aggregate(query).exec();
   }
 
   private async getSessionsInPeriod(from: Date, to: Date) {

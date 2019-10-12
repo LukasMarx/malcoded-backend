@@ -9,7 +9,6 @@ async function bootstrap() {
   });
   app.use(helmet());
   app.setGlobalPrefix('/v1/api');
-  // app.useWebSocketAdapter(new WebsocketAdapter(app));
   app.useWebSocketAdapter(new WsAdapter(app));
   await app.listen(3000);
 }
