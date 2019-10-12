@@ -182,7 +182,7 @@ export class AnalyticsService {
         result.push({
           affiliate: affiliate._id,
           views: affiliate.count,
-          clicks: clickMap[affiliate._id].count,
+          clicks: clickMap[affiliate._id] ? clickMap[affiliate._id].count : 0,
         });
       }
     }
