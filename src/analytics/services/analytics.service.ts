@@ -170,14 +170,21 @@ export class AnalyticsService {
       'subType',
     );
 
+    const clickMap = {};
+    affiliateClicks.forEach(click => {
+      clickMap[click._id] = click;
+    });
+
     const result = [];
 
     for (let affiliate of affiliateViews) {
-      result.push({
-        affiliate,
-        views: affiliateViews[affiliate],
-        clicks: affiliateClicks[affiliate],
-      });
+      if (affiliate._id) {
+        result.push({
+          affiliate: affiliate._id,
+          views: affiliate.count,
+          clicks: clickMap[affiliate._id].count,
+        });
+      }
     }
 
     return {
