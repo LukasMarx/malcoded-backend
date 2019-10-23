@@ -3,7 +3,6 @@ import { Schema } from 'mongoose';
 export const AnalyticsEventSchema = new Schema({
   timestamp: {
     type: Date,
-    index: { unique: false, background: true },
     default: Date.now,
   },
   sessionId: {
@@ -21,6 +20,11 @@ export const AnalyticsEventSchema = new Schema({
 
 AnalyticsEventSchema.index(
   { timestamp: -1, type: 1 },
+  { unique: false, background: true },
+);
+
+AnalyticsEventSchema.index(
+  { timestamp: -1 },
   { unique: false, background: true },
 );
 
