@@ -19,10 +19,14 @@ export const AnalyticsEventSchema = new Schema({
   args: [String],
 });
 
+AnalyticsEventSchema.index(
+  { timestamp: -1, type: 1 },
+  { unique: false, background: true },
+);
+
 export const AnalyticsSessionSchema = new Schema({
   timestamp: {
     type: Date,
-    index: { unique: false, background: true },
     default: Date.now,
   },
   duration: Number,
@@ -37,6 +41,11 @@ export const AnalyticsSessionSchema = new Schema({
 AnalyticsSessionSchema.virtual('id').get(function() {
   return this._id.toString();
 });
+
+AnalyticsSessionSchema.index(
+  { timestamp: -1 },
+  { unique: false, background: true },
+);
 
 AnalyticsEventSchema.virtual('id').get(function() {
   return this._id.toString();
