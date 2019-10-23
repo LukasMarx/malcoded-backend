@@ -157,18 +157,23 @@ export class AnalyticsService {
     const fromDate = new Date(from);
     const toDate = new Date(to);
 
-    const affiliateViews = await this.getEventsInPeriod(
+    const affiliateViewsPromise = this.getEventsInPeriod(
       fromDate,
       toDate,
       'affiliateView',
       'subType',
     );
-    const affiliateClicks = await this.getEventsInPeriod(
+    const affiliateClicksPromise = await this.getEventsInPeriod(
       fromDate,
       toDate,
       'affiliateClick',
       'subType',
     );
+
+    const [affiliateViews, affiliateClicks] = await Promise.all([
+      affiliateViewsPromise,
+      affiliateClicksPromise,
+    ]);
 
     const clickMap = {};
     affiliateClicks.forEach(click => {
@@ -231,6 +236,7 @@ export class AnalyticsService {
           },
         },
       ])
+      .option({ hint: 'timeAndType' })
       .exec();
   }
 
@@ -258,7 +264,10 @@ export class AnalyticsService {
       });
     }
 
-    return this.analytisEventModel.aggregate(query).exec();
+    return this.analytisEventModel
+      .aggregate(query)
+      .option({ hint: 'timeAndType' })
+      .exec();
   }
 
   private async getSessionsInPeriod(from: Date, to: Date) {

@@ -20,7 +20,7 @@ export const AnalyticsEventSchema = new Schema({
 
 AnalyticsEventSchema.index(
   { timestamp: -1, type: 1 },
-  { unique: false, background: true },
+  { unique: false, background: true, name: 'timeAndType' },
 );
 
 AnalyticsEventSchema.index(
