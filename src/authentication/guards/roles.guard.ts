@@ -29,10 +29,15 @@ export class RolesGuard extends AuthGuard {
     }
 
     const ctx = GqlExecutionContext.create(context);
-    const request = ctx.getContext()
+    let request = ctx.getContext()
       ? ctx.getContext().req
       : context.switchToHttp().getRequest();
 
+    if (!request) {
+      var cext = context.switchToHttp();
+      console.log(cext);
+      request = cext.getRequest();
+    }
     const user = request.user;
     const hasRole = () => user.roles.some(role => roles.includes(role));
     return user && user.roles && hasRole();
