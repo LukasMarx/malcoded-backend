@@ -1,5 +1,5 @@
 language: node_js
-node_js: '9'
+node_js: '12.13.1'
 sudo: required
 if: tag IS present OR branch  = master
 services:
