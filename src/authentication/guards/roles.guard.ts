@@ -35,7 +35,6 @@ export class RolesGuard extends AuthGuard {
 
     if (!request) {
       var cext = context.switchToHttp();
-      console.log(cext);
       request = cext.getRequest();
     }
     const user = request.user;
