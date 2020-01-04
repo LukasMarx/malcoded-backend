@@ -1,22 +1,12 @@
 import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
 
-export interface AnalyticsSession extends Document {
-  timestamp: Date;
-  duration: Number;
-  userLocation: string;
-  numPageViews: number;
-  browser: string;
-  browserVersion: string;
-  isOnMobile: boolean;
-  lastPageLocation: string;
-}
-
-export interface AnalyticsEvent extends Document {
-  sessionId: ObjectId;
-  timestamp: Date;
-  type: string;
-  subType: string;
-  pageLocation: string;
-  args?: string[];
+export interface AnalyticsDailySessionCount extends Document {
+  day: Date;
+  pages: { [key: string]: number };
+  count: number;
+  locations: { [key: string]: number };
+  browsers: Map<string, number>;
+  affiliateClick: Map<string, number>;
+  affiliateView: Map<string, number>;
 }

@@ -1,22 +1,13 @@
 import { Connection } from 'mongoose';
 import { DbAnalyticsConnectionToken } from '../../constants';
-import { AnalyticsSessionToken, AnalyticsEventToken } from '../constants';
-import {
-  AnalyticsSessionSchema,
-  AnalyticsEventSchema,
-} from '../schemas/analyticsSession.schema';
+import { AnalyticsDailySessionCountToken } from '../constants';
+import { AnalyticsDailySessionCount } from 'analytics/schemas/analyticsSession.schema';
 
 export const analyticsProviders = [
   {
-    provide: AnalyticsSessionToken,
+    provide: AnalyticsDailySessionCountToken,
     useFactory: (connection: Connection) =>
-      connection.model('AnalyticsSession', AnalyticsSessionSchema),
-    inject: [DbAnalyticsConnectionToken],
-  },
-  {
-    provide: AnalyticsEventToken,
-    useFactory: (connection: Connection) =>
-      connection.model('AnalyticsEvent', AnalyticsEventSchema),
+      connection.model('AnalyticsSession', AnalyticsDailySessionCount),
     inject: [DbAnalyticsConnectionToken],
   },
 ];

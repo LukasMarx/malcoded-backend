@@ -6,21 +6,13 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import {
-  AnalyticsSession,
-  AnalyticsEvent,
-} from './../interfaces/analyticsSession.interface';
+import { AnalyticsDailySessionCount } from './../interfaces/analyticsSession.interface';
 import { Client, Server } from 'socket.io';
 import { AnalyticsEventDto } from './../../analytics/dto/analyticsEvent.dto';
-import {
-  AnalyticsSessionToken,
-  AnalyticsEventToken,
-} from '../../analytics/constants';
+import { AnalyticsDailySessionCountToken } from '../../analytics/constants';
 import { Inject } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { Roles } from './../../authentication/decorators/roles.decorator';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
-import { ObjectId } from 'bson';
 import { v4 } from 'uuid';
 import * as UaParser from 'ua-parser-js';
 import { AnalyticsService } from './../../analytics/services/analytics.service';
@@ -30,10 +22,10 @@ export const EVENT_PAGEVIEW = 'pageview';
 @WebSocketGateway(3001)
 export class PageviewGateway
   implements OnGatewayConnection, OnGatewayDisconnect {
-  private activeSessions: { [key: string]: Partial<AnalyticsSession> } = {};
+  private activeSessions: { [key: string]: any } = {};
 
   private liveAnalyticsSubscribers: {
-    [key: string]: Subject<WsResponse<Partial<AnalyticsSession>[]>>;
+    [key: string]: Subject<WsResponse<any>>;
   } = {};
 
   private livePageviewsTodaySubscribers: {
@@ -44,11 +36,9 @@ export class PageviewGateway
   server: Server;
 
   constructor(
-    @Inject(AnalyticsSessionToken)
-    private readonly sessionModel: Model<AnalyticsSession>,
-    @Inject(AnalyticsEventToken)
-    private readonly eventModel: Model<AnalyticsEvent>,
-    private analyticsService: AnalyticsService,
+    @Inject(AnalyticsDailySessionCountToken)
+    private readonly dailySessionModel: Model<AnalyticsDailySessionCount>,
+    private readonly analyticsService: AnalyticsService,
   ) {}
 
   handleConnection(client: any, ...args: any[]) {
@@ -98,33 +88,37 @@ export class PageviewGateway
 
   @SubscribeMessage('event')
   async onAnalyticsEvent(client: any, data: AnalyticsEventDto) {
+    var today = new Date(new Date().toDateString());
     if (!this.activeSessions[client.id]) {
-      console.log('creating new session');
-      let session = this.createSession(
-        client.userLocation,
-        client.browser,
-        client.device,
-        data,
-      );
-      session = await session.save();
-      this.activeSessions[client.id] = session;
+      this.activeSessions[client.id] = data.userLocation;
     }
-    const session = this.activeSessions[client.id];
+    if (data.type === 'pageview') {
+      const inc = { count: 1 };
+      inc[`pages.${data.pageLocation}`] = 1;
+      inc[`locations.${data.userLocation}`] = 1;
+      inc[`browsers.${client.browser.name}`] = 1;
 
-    const event = new this.eventModel({
-      type: data.type,
-      subType: data.subType,
-      pageLocation: data.pageLocation,
-      args: data.args,
-      timestamp: new Date(),
-      sessionId: new ObjectId(session.id),
-    });
+      console.log(client.browser);
 
-    await event.save();
-
-    if (event.type === EVENT_PAGEVIEW) {
-      session.numPageViews = session.numPageViews + 1;
-      session.lastPageLocation = data.pageLocation;
+      await this.dailySessionModel
+        .update({ day: today }, { $inc: inc }, { upsert: true })
+        .exec();
+    }
+    if (data.type === 'affiliateClick') {
+      const inc = {
+        [`affiliateClick.${data.subType}`]: 1,
+      };
+      await this.dailySessionModel
+        .update({ day: today }, { $inc: inc }, { upsert: true })
+        .exec();
+    }
+    if (data.type === 'affiliateView') {
+      const inc = {
+        [`affiliateView.${data.subType}`]: 1,
+      };
+      await this.dailySessionModel
+        .update({ day: today }, { $inc: inc }, { upsert: true })
+        .exec();
     }
 
     Promise.all([
@@ -134,11 +128,9 @@ export class PageviewGateway
   }
 
   @SubscribeMessage('registerForLiveAnalytics')
-  registerUserForLiveAnalyitcs(
-    client: Client,
-  ): Observable<WsResponse<Partial<AnalyticsSession>[]>> {
+  registerUserForLiveAnalytics(client: Client): Observable<WsResponse<any>> {
     console.log('subscribed');
-    var subject = new BehaviorSubject<WsResponse<Partial<AnalyticsSession[]>>>({
+    var subject = new BehaviorSubject<WsResponse<any>>({
       event: 'updateLiveAnalytics',
       data: Object.values(this.activeSessions) as any,
     });
@@ -166,27 +158,6 @@ export class PageviewGateway
     });
 
     return subject.asObservable();
-  }
-
-  private createSession(
-    location: string,
-    browser: any,
-    device: any,
-    data: AnalyticsEventDto,
-  ) {
-    const isOnMobile =
-      device && (device.type === 'mobile' || device.type === 'tablet');
-
-    const session = new this.sessionModel({
-      duration: undefined,
-      userLocation: location || data.userLocation,
-      numPageViews: 0,
-      lastPageLocation: undefined,
-      browser: browser ? browser.name : undefined,
-      browserVersion: browser ? browser.version : undefined,
-      isOnMobile,
-    });
-    return session;
   }
 
   private async notifyAboutLiveAnalytics() {
