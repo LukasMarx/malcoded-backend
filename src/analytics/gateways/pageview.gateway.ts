@@ -90,12 +90,12 @@ export class PageviewGateway
   async onAnalyticsEvent(client: any, data: AnalyticsEventDto) {
     var today = new Date(new Date().toDateString());
     if (!this.activeSessions[client.id]) {
-      this.activeSessions[client.id] = data.userLocation;
+      this.activeSessions[client.id] = client.userLocation;
     }
     if (data.type === 'pageview') {
       const inc = { count: 1 };
       inc[`pages.${data.pageLocation}`] = 1;
-      inc[`locations.${data.userLocation}`] = 1;
+      inc[`locations.${client.userLocation}`] = 1;
       inc[`browsers.${client.browser.name}`] = 1;
 
       console.log(client.browser);
