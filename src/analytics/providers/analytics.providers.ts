@@ -1,7 +1,7 @@
 import { Connection } from 'mongoose';
 import { DbAnalyticsConnectionToken } from '../../constants';
 import { AnalyticsDailySessionCountToken } from '../constants';
-import { AnalyticsDailySessionCount } from 'analytics/schemas/analyticsSession.schema';
+import { AnalyticsDailySessionCount } from '../../analytics/schemas/analyticsSession.schema';
 
 export const analyticsProviders = [
   {
