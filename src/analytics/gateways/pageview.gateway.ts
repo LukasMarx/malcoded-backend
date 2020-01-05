@@ -62,15 +62,9 @@ export class PageviewGateway
 
   async handleDisconnect(client: any) {
     console.log('disconnect');
-    const session = this.activeSessions[client.id];
-    if (session) {
-      if (session.timestamp) {
-        session.duration = new Date().getTime() - session.timestamp.getTime();
-      }
 
-      await session.save();
-      delete this.activeSessions[client.id];
-    }
+    delete this.activeSessions[client.id];
+
     const liveAnalyticsSubscription = this.liveAnalyticsSubscribers[client.id];
     if (liveAnalyticsSubscription) {
       liveAnalyticsSubscription.complete();
