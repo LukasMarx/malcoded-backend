@@ -32,7 +32,7 @@
     "@types/bcrypt": "^2.0.0",
     "@types/mjml": "^4.0.0",
     "@types/passport": "^0.4.6",
-    "apollo-server-express": "^2.1.0",
+    "apollo-server-express": "^2.14.2",
     "bcrypt": "^3.0.1",
     "dotenv": "^6.0.0",
     "email-validator": "^2.0.4",
