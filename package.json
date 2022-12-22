@@ -39,7 +39,7 @@
     "graphql": "^14.0.2",
     "gridfs-stream": "^1.1.1",
     "helmet": "^3.13.0",
-    "jsonwebtoken": "^8.3.0",
+    "jsonwebtoken": "^9.0.0",
     "mjml": "^4.5.1",
     "mongoose": "^5.2.17",
     "nodemailer": "^4.6.8",
